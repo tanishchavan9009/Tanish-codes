@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>∂ Partial Derivative Solver</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+
+<style>
+:root{
+  --bg:#07070d;
+  --card:#11111a;
+  --card2:#181826;
+  --border:rgba(125,108,255,.18);
+
+  --primary:#8a6cff;
+  --secondary:#ff6ca8;
+  --green:#65ffd0;
+
+  --text:#f3f1ff;
+  --muted:#9089b7;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Syne',sans-serif;
+  overflow-x:hidden;
+  min-height:100vh;
+  position:relative;
+}
+
+/* GRID */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(125,108,255,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(125,108,255,.06) 1px, transparent 1px);
+  background-size:48px 48px;
+  pointer-events:none;
+}
+
+/* GLOW */
+.glow1{
+  position:fixed;
+  width:500px;
+  height:500px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(138,108,255,.16), transparent 70%);
+  top:-200px;
+  left:-100px;
+  pointer-events:none;
+}
+
+.glow2{
+  position:fixed;
+  width:500px;
+  height:500px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(255,108,168,.12), transparent 70%);
+  bottom:-220px;
+  right:-100px;
+  pointer-events:none;
+}
+
+.container{
+  width:min(1100px,92%);
+  margin:auto;
+  position:relative;
+  z-index:2;
+}
+
+/* HEADER */
+header{
+  padding:60px 0 30px;
+  text-align:center;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--border);
+  background:rgba(138,108,255,.08);
+  padding:8px 18px;
+  border-radius:100px;
+  font-family:'Space Mono',monospace;
+  font-size:12px;
+  color:var(--primary);
+  margin-bottom:25px;
+}
+
+.dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--primary);
+  animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{
+    transform:scale(1);
+    opacity:1;
+  }
+  50%{
+    transform:scale(.7);
+    opacity:.4;
+  }
+}
+
+h1{
+  font-size:clamp(48px,8vw,110px);
+  line-height:.95;
+  letter-spacing:-3px;
+  font-weight:800;
+}
+
+h1 span{
+  color:var(--primary);
+}
+
+.subtitle{
+  max-width:650px;
+  margin:25px auto 0;
+  color:var(--muted);
+  font-size:18px;
+  line-height:1.7;
+}
+
+/* EXAMPLES */
+.section-title{
+  font-family:'Space Mono',monospace;
+  color:var(--muted);
+  font-size:12px;
+  margin:40px 0 16px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+
+.examples{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:14px;
+}
+
+.example{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:18px;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.example:hover{
+  transform:translateY(-5px);
+  border-color:var(--primary);
+  background:rgba(138,108,255,.07);
+}
+
+.example h3{
+  font-size:24px;
+  font-family:'Space Mono',monospace;
+  margin-bottom:8px;
+}
+
+.example p{
+  color:var(--muted);
+  font-size:14px;
+}
+
+/* SOLVER */
+.solver{
+  margin-top:40px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:35px;
+  position:relative;
+  overflow:hidden;
+}
+
+.solver::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:2px;
+  background:linear-gradient(90deg,var(--primary),var(--secondary),var(--green));
+}
+
+.label{
+  font-family:'Space Mono',monospace;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:12px;
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+
+input{
+  width:100%;
+  background:var(--card2);
+  border:1px solid var(--border);
+  color:white;
+  padding:20px;
+  border-radius:16px;
+  outline:none;
+  font-size:22px;
+  font-family:'Space Mono',monospace;
+  margin-bottom:30px;
+}
+
+input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(138,108,255,.15);
+}
+
+/* BUTTONS */
+.var-buttons,
+.order-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:12px;
+}
+
+.var-btn,
+.order-btn{
+  background:var(--card2);
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:12px 22px;
+  border-radius:12px;
+  cursor:pointer;
+  font-family:'Space Mono',monospace;
+  transition:.2s;
+}
+
+.var-btn:hover,
+.order-btn:hover{
+  border-color:var(--primary);
+  color:white;
+}
+
+.var-btn.active{
+  background:rgba(138,108,255,.14);
+  border-color:var(--primary);
+  color:var(--primary);
+}
+
+.order-btn.active{
+  background:rgba(255,108,168,.12);
+  border-color:var(--secondary);
+  color:var(--secondary);
+}
+
+/* SOLVE BTN */
+.solve-btn{
+  margin-top:30px;
+  width:100%;
+  border:none;
+  padding:18px;
+  border-radius:16px;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+  color:white;
+  background:linear-gradient(135deg,var(--primary),#a87dff);
+  transition:.25s;
+}
+
+.solve-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 15px 40px rgba(138,108,255,.35);
+}
+
+/* ERROR */
+.error{
+  display:none;
+  margin-top:20px;
+  background:rgba(255,80,80,.08);
+  border:1px solid rgba(255,80,80,.2);
+  padding:15px;
+  border-radius:12px;
+  color:#ff9f9f;
+  font-family:'Space Mono',monospace;
+}
+
+.error.show{
+  display:block;
+}
+
+/* RESULT */
+.result{
+  display:none;
+  margin-top:35px;
+  background:var(--card);
+  border:1px solid rgba(101,255,208,.2);
+  border-radius:24px;
+  padding:30px;
+  animation:fade .35s ease;
+}
+
+.result.show{
+  display:block;
+}
+
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:translateY(15px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.result-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.result-title{
+  font-family:'Space Mono',monospace;
+  color:var(--green);
+  font-size:13px;
+  text-transform:uppercase;
+}
+
+.copy-btn{
+  border:none;
+  background:rgba(101,255,208,.1);
+  border:1px solid rgba(101,255,208,.18);
+  color:var(--green);
+  padding:10px 16px;
+  border-radius:10px;
+  cursor:pointer;
+  font-family:'Space Mono',monospace;
+}
+
+.answer{
+  background:var(--card2);
+  border:1px solid rgba(101,255,208,.08);
+  border-radius:16px;
+  padding:24px;
+  font-size:26px;
+  font-family:'Space Mono',monospace;
+  line-height:1.7;
+  margin-bottom:18px;
+  word-break:break-word;
+}
+
+.answer-label{
+  color:var(--muted);
+  font-family:'Space Mono',monospace;
+  margin-bottom:25px;
+}
+
+.answer-label span{
+  color:var(--primary);
+}
+
+/* STEPS */
+.steps{
+  border-top:1px solid var(--border);
+  padding-top:25px;
+}
+
+.step-title{
+  font-family:'Space Mono',monospace;
+  color:var(--muted);
+  font-size:13px;
+  text-transform:uppercase;
+  margin-bottom:20px;
+}
+
+.step{
+  display:flex;
+  gap:16px;
+  margin-bottom:18px;
+}
+
+.step-number{
+  min-width:32px;
+  height:32px;
+  border-radius:50%;
+  background:rgba(138,108,255,.12);
+  border:1px solid var(--border);
+  color:var(--primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-family:'Space Mono',monospace;
+}
+
+.step-text{
+  color:var(--muted);
+  line-height:1.8;
+  font-family:'Space Mono',monospace;
+}
+
+.highlight{
+  color:white;
+}
+
+/* RULES */
+.rules{
+  margin-top:40px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
+
+.rule{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+}
+
+.rule h4{
+  color:var(--secondary);
+  margin-bottom:12px;
+  font-family:'Space Mono',monospace;
+  font-size:12px;
+  text-transform:uppercase;
+}
+
+.rule p{
+  line-height:1.8;
+  font-family:'Space Mono',monospace;
+}
+
+/* FOOTER */
+footer{
+  margin-top:60px;
+  padding:30px 0;
+  text-align:center;
+  color:var(--muted);
+  border-top:1px solid var(--border);
+  font-family:'Space Mono',monospace;
+  font-size:13px;
+}
+
+/* TOAST */
+.toast{
+  position:fixed;
+  bottom:35px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:var(--card2);
+  border:1px solid var(--green);
+  padding:12px 22px;
+  border-radius:100px;
+  color:var(--green);
+  font-family:'Space Mono',monospace;
+  opacity:0;
+  transition:.3s;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+@media(max-width:700px){
+
+  .solver{
+    padding:22px;
+  }
+
+  h1{
+    letter-spacing:-1px;
+  }
+
+  input{
+    font-size:17px;
+  }
+
+  .answer{
+    font-size:20px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="glow1"></div>
+<div class="glow2"></div>
+
+<div class="container">
+
+<header>
+
+<div class="badge">
+<div class="dot"></div>
+ENGINEERING CALCULUS TOOL
+</div>
+
+<h1>
+<span>∂</span> Partial<br>
+Derivative<br>
+Solver
+</h1>
+
+<p class="subtitle">
+Compute partial derivatives symbolically.
+Enter any multivariable function and differentiate instantly.
+</p>
+
+</header>
+
+<!-- EXAMPLES -->
+
+<div class="section-title">— Quick Examples</div>
+
+<div class="examples">
+
+<div class="example" onclick="loadExample('x^2 + y^2 + z^2','x',1)">
+<h3>x² + y² + z²</h3>
+<p>Sum of squares</p>
+</div>
+
+<div class="example" onclick="loadExample('sin(x) * cos(y)','x',1)">
+<h3>sin(x)·cos(y)</h3>
+<p>Trig product</p>
+</div>
+
+<div class="example" onclick="loadExample('x^2*y + e^(x*y)','y',1)">
+<h3>x²y + e^(xy)</h3>
+<p>Exponential mix</p>
+</div>
+
+<div class="example" onclick="loadExample('x^3*y^2 - 3*x*y^3','x',2)">
+<h3>x³y² − 3xy³</h3>
+<p>Second derivative</p>
+</div>
+
+<div class="example" onclick="loadExample('ln(x^2+y^2)','x',1)">
+<h3>ln(x²+y²)</h3>
+<p>Logarithmic</p>
+</div>
+
+<div class="example" onclick="loadExample('x*y*z + sin(x*z)','z',1)">
+<h3>xyz + sin(xz)</h3>
+<p>Three variables</p>
+</div>
+
+</div>
+
+<!-- SOLVER -->
+
+<div class="solver">
+
+<div class="label">— Function f(x, y, z ...)</div>
+
+<input
+type="text"
+id="functionInput"
+placeholder="e.g. x^2*y + sin(x*z)"
+autocomplete="off"
+/>
+
+<div class="label">— Differentiate with respect to</div>
+
+<div class="var-buttons">
+
+<button class="var-btn active" data-var="x" onclick="selectVariable(this)">x</button>
+
+<button class="var-btn" data-var="y" onclick="selectVariable(this)">y</button>
+
+<button class="var-btn" data-var="z" onclick="selectVariable(this)">z</button>
+
+<button class="var-btn" data-var="t" onclick="selectVariable(this)">t</button>
+
+<button class="var-btn" data-var="r" onclick="selectVariable(this)">r</button>
+
+<button class="var-btn" data-var="θ" onclick="selectVariable(this)">θ</button>
+
+</div>
+
+<br><br>
+
+<div class="label">— Derivative order</div>
+
+<div class="order-buttons">
+
+<button class="order-btn active" data-order="1" onclick="selectOrder(this)">
+1st ∂f/∂x
+</button>
+
+<button class="order-btn" data-order="2" onclick="selectOrder(this)">
+2nd ∂²f/∂x²
+</button>
+
+<button class="order-btn" data-order="3" onclick="selectOrder(this)">
+3rd ∂³f/∂x³
+</button>
+
+</div>
+
+<div class="error" id="errorBox"></div>
+
+<button class="solve-btn" onclick="solveDerivative()">
+Compute Partial Derivative →
+</button>
+
+</div>
+
+<!-- RESULT -->
+
+<div class="result" id="resultBox">
+
+<div class="result-top">
+
+<div class="result-title">
+— Result
+</div>
+
+<button class="copy-btn" onclick="copyResult()">
+copy
+</button>
+
+</div>
+
+<div class="answer" id="answer"></div>
+
+<div class="answer-label" id="answerLabel"></div>
+
+<div class="steps">
+
+<div class="step-title">
+— Derivation Steps
+</div>
+
+<div id="stepsContainer"></div>
+
+</div>
+
+</div>
+
+<!-- RULES -->
+
+<div class="section-title">— Differentiation Reference</div>
+
+<div class="rules">
+
+<div class="rule">
+<h4>Power Rule</h4>
+<p>∂/∂x [xⁿ] = n·xⁿ⁻¹</p>
+</div>
+
+<div class="rule">
+<h4>Product Rule</h4>
+<p>∂(uv)/∂x = u·∂v/∂x + v·∂u/∂x</p>
+</div>
+
+<div class="rule">
+<h4>Chain Rule</h4>
+<p>∂f/∂x = ∂f/∂u · ∂u/∂x</p>
+</div>
+
+<div class="rule">
+<h4>Exponential</h4>
+<p>
+∂/∂x [eˣ] = eˣ<br>
+∂/∂x [aˣ] = aˣ ln(a)
+</p>
+</div>
+
+<div class="rule">
+<h4>Logarithm</h4>
+<p>∂/∂x [ln(x)] = 1/x</p>
+</div>
+
+<div class="rule">
+<h4>Trig Functions</h4>
+<p>
+∂/∂x [sin x] = cos x<br>
+∂/∂x [cos x] = −sin x
+</p>
+</div>
+
+<div class="rule">
+<h4>Constant Rule</h4>
+<p>
+∂/∂x [c] = 0<br>
+∂/∂x [cf] = c∂f/∂x
+</p>
+</div>
+
+<div class="rule">
+<h4>Mixed Partials</h4>
+<p>
+∂²f/∂x∂y = ∂²f/∂y∂x
+</p>
+</div>
+
+</div>
+
+<footer>
+∂ Partial Derivative Solver — Powered by math.js
+</footer>
+
+</div>
+
+<div class="toast" id="toast">
+Copied to clipboard
+</div>
+
+<script>
+
+let selectedVariable = "x";
+let selectedDerivativeOrder = 1;
+let currentResult = "";
+
+/* VARIABLE */
+
+function selectVariable(button){
+
+  document.querySelectorAll(".var-btn").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+  selectedVariable = button.dataset.var;
+}
+
+/* ORDER */
+
+function selectOrder(button){
+
+  document.querySelectorAll(".order-btn").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+
+  button.classList.add("active");
+
+  selectedDerivativeOrder = Number(button.dataset.order);
+}
+
+/* LOAD EXAMPLE */
+
+function loadExample(expression, variable, order){
+
+  document.getElementById("functionInput").value = expression;
+
+  selectedVariable = variable;
+  selectedDerivativeOrder = order;
+
+  document.querySelectorAll(".var-btn").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.var === variable);
+  });
+
+  document.querySelectorAll(".order-btn").forEach(btn=>{
+    btn.classList.toggle(
+      "active",
+      Number(btn.dataset.order) === order
+    );
+  });
+
+  solveDerivative();
+}
+
+/* FORMAT */
+
+function formatExpression(expression){
+
+  return expression
+    .replace(/\*\*/g, "^")
+    .replace(/\b1 \* /g, "")
+    .replace(/ \* 1\b/g, "")
+    .replace(/\(-1\) \* /g, "-")
+    .replace(/Math\./g, "");
+
+}
+
+/* SHOW ERROR */
+
+function showError(message){
+
+  const errorBox = document.getElementById("errorBox");
+
+  errorBox.innerText = message;
+
+  errorBox.classList.add("show");
+}
+
+/* CLEAR ERROR */
+
+function clearError(){
+
+  document.getElementById("errorBox")
+    .classList.remove("show");
+}
+
+/* BUILD NOTATION */
+
+function buildNotation(variable, order){
+
+  if(order === 1){
+    return `∂f/∂${variable}`;
+  }
+
+  if(order === 2){
+    return `∂²f/∂${variable}²`;
+  }
+
+  return `∂³f/∂${variable}³`;
+}
+
+/* GENERATE STEPS */
+
+function generateSteps(func, variable, order, result){
+
+  let html = "";
+
+  const steps = [];
+
+  steps.push(`Starting with f = ${func}`);
+
+  steps.push(`Treat all variables except ${variable} as constants`);
+
+  if(order === 1){
+
+    steps.push(
+      `Apply differentiation rules: power, chain and product rules`
+    );
+
+    steps.push(
+      `Result: ${buildNotation(variable,1)} = ${result}`
+    );
+
+  }
+
+  else if(order === 2){
+
+    let firstDerivative = math.derivative(func, variable).toString();
+
+    firstDerivative = formatExpression(firstDerivative);
+
+    steps.push(
+      `First derivative: ∂f/∂${variable} = ${firstDerivative}`
+    );
+
+    steps.push(
+      `Differentiate again with respect to ${variable}`
+    );
+
+    steps.push(
+      `Result: ∂²f/∂${variable}² = ${result}`
+    );
+
+  }
+
+  else{
+
+    steps.push(
+      `Differentiate three times with respect to ${variable}`
+    );
+
+    steps.push(
+      `Result: ∂³f/∂${variable}³ = ${result}`
+    );
+
+  }
+
+  steps.forEach((step,index)=>{
+
+    html += `
+      <div class="step">
+
+        <div class="step-number">
+          0${index + 1}
+        </div>
+
+        <div class="step-text">
+          <span class="highlight">${step}</span>
+        </div>
+
+      </div>
+    `;
+
+  });
+
+  return html;
+}
+
+/* SOLVE */
+
+function solveDerivative(){
+
+  clearError();
+
+  const input = document
+    .getElementById("functionInput")
+    .value
+    .trim();
+
+  if(!input){
+
+    showError("Please enter a function.");
+
+    return;
+  }
+
+  try{
+
+    let expression = input;
+
+    if(selectedVariable === "θ"){
+      expression = expression.replace(/θ/g,"theta");
+    }
+
+    const parsed = math.parse(expression);
+
+    let result = parsed;
+
+    const variable =
+      selectedVariable === "θ"
+      ? "theta"
+      : selectedVariable;
+
+    for(let i=0;i<selectedDerivativeOrder;i++){
+
+      result = math.derivative(
+        result.toString(),
+        variable
+      );
+
+    }
+
+    result = math.simplify(result);
+
+    let resultText = formatExpression(result.toString());
+
+    if(selectedVariable === "θ"){
+      resultText = resultText.replace(/theta/g,"θ");
+    }
+
+    currentResult = resultText;
+
+    document.getElementById("answer")
+      .innerText = resultText;
+
+    document.getElementById("answerLabel")
+      .innerHTML =
+      `<span>${buildNotation(selectedVariable,selectedDerivativeOrder)}</span> where f(...) = ${input}`;
+
+    document.getElementById("stepsContainer")
+      .innerHTML =
+      generateSteps(
+        input,
+        selectedVariable,
+        selectedDerivativeOrder,
+        resultText
+      );
+
+    document.getElementById("resultBox")
+      .classList.add("show");
+
+    document.getElementById("resultBox")
+      .scrollIntoView({
+        behavior:"smooth",
+        block:"nearest"
+      });
+
+  }
+
+  catch(error){
+
+    showError(
+      "Invalid function syntax. Use ^ for powers and * for multiplication."
+    );
+
+  }
+
+}
+
+/* COPY */
+
+function copyResult(){
+
+  if(!currentResult) return;
+
+  navigator.clipboard.writeText(currentResult);
+
+  const toast = document.getElementById("toast");
+
+  toast.classList.add("show");
+
+  setTimeout(()=>{
+    toast.classList.remove("show");
+  },2200);
+
+}
+
+/* ENTER */
+
+document
+.getElementById("functionInput")
+.addEventListener("keydown",function(e){
+
+  if(e.key === "Enter"){
+    solveDerivative();
+  }
+
+});
+
+</script>
+
+</body>
+</html>

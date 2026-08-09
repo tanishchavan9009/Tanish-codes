@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    background: url("https://wallpapers.com/images/hd/abstract-green-matrix-codes-hacker-4k-pgizzp1cowrlxipq.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.container {
+    width: 450px;
+    padding: 30px;
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+h1, p {
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+}
+
+select, input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 10px;
+    border: none;
+}
+
+button {
+    margin-top: 20px;
+    background: white;
+    color: #312e81;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+.result {
+    margin-top: 20px;
+}
+.checkbox-group {
+    margin-top: 15px;
+}
+
+.checkbox-group label {
+    display: block;
+    margin: 8px 0;
+    font-size: 16px;
+}

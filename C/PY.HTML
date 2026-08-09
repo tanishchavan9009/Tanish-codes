@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUANTUM PHYSICS — Engineering Physics</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #02020a;
+    --surface: #07071a;
+    --accent: #00f5ff;
+    --accent2: #ff006e;
+    --accent3: #ffe100;
+    --text: #e8e8f0;
+    --muted: #5a5a7a;
+    --glow: 0 0 40px rgba(0,245,255,0.4);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s, background 0.2s;
+    mix-blend-mode: difference;
+  }
+  .cursor-trail {
+    width: 30px; height: 30px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.5;
+    transition: left 0.08s, top 0.08s;
+  }
+
+  /* HERO */
+  #hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #particle-canvas {
+    position: absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .hero-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    animation: fadeUp 1s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 12vw, 11rem);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: #fff;
+    text-shadow: 0 0 80px rgba(0,245,255,0.3), 0 0 160px rgba(0,245,255,0.1);
+    animation: fadeUp 1s 0.2s ease both;
+  }
+
+  .hero-title span {
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--muted);
+    margin-top: 1.5rem;
+    animation: fadeUp 1s 0.4s ease both;
+  }
+
+  .hero-eq {
+    font-family: 'Crimson Pro', serif;
+    font-size: 2rem;
+    color: var(--accent3);
+    margin-top: 1.5rem;
+    letter-spacing: 0.05em;
+    animation: fadeUp 1s 0.6s ease both;
+    text-shadow: 0 0 30px rgba(255,225,0,0.5);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-hint::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(var(--accent), transparent);
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    background: rgba(2,2,10,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,245,255,0.1);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* SECTIONS */
+  section {
+    padding: 6rem 2rem;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .section-tag {
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1;
+    color: #fff;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-intro {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.25rem;
+    color: var(--muted);
+    max-width: 600px;
+    line-height: 1.7;
+    margin-bottom: 4rem;
+  }
+
+  /* TOPIC CARDS */
+  .topics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5px;
+    background: rgba(0,245,255,0.08);
+    border: 1px solid rgba(0,245,255,0.08);
+  }
+
+  .topic-card {
+    background: var(--bg);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .topic-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+
+  .topic-card:hover::before { transform: scaleX(1); }
+  .topic-card:hover { background: rgba(0,245,255,0.04); }
+
+  .topic-num {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .topic-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .topic-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .topic-desc {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .topic-eq {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--accent3);
+    padding: 0.75rem 1rem;
+    border-left: 2px solid var(--accent3);
+    background: rgba(255,225,0,0.04);
+  }
+
+  .topic-facts {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .fact-item {
+    font-size: 0.75rem;
+    color: var(--muted);
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .fact-item::before {
+    content: '→';
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* BIG STAT BANNER */
+  .stat-banner {
+    background: var(--surface);
+    border: 1px solid rgba(0,245,255,0.1);
+    padding: 4rem 3rem;
+    margin: 4rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(ellipse at 20% 50%, rgba(0,245,255,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(255,0,110,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .stat-item { text-align: center; }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  /* INTERACTIVE SIMULATIONS */
+  #simulations { background: linear-gradient(180deg, var(--bg), var(--surface) 50%, var(--bg)); }
+
+  .sim-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  @media(max-width:768px) { .sim-wrapper { grid-template-columns: 1fr; } }
+
+  .sim-box {
+    background: var(--bg);
+    border: 1px solid rgba(0,245,255,0.12);
+    padding: 2rem;
+    position: relative;
+  }
+
+  .sim-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .sim-desc { font-size: 0.75rem; color: var(--muted); margin-bottom: 1.5rem; }
+
+  canvas.sim-canvas {
+    width: 100%;
+    height: 220px;
+    display: block;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(0,245,255,0.05);
+  }
+
+  .sim-controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .sim-controls label { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; }
+
+  .sim-controls input[type=range] {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+
+  .ctrl-group { flex: 1; min-width: 120px; }
+
+  /* FORMULA BOARD */
+  .formula-board {
+    background: var(--surface);
+    border: 1px solid rgba(255,225,0,0.15);
+    padding: 3rem;
+    margin: 4rem 0;
+    position: relative;
+  }
+
+  .formula-board::before {
+    content: 'FORMULA SHEET';
+    position: absolute;
+    top: -0.6rem;
+    left: 2rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--accent3);
+    background: var(--surface);
+    padding: 0 0.75rem;
+  }
+
+  .formula-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .formula-item {
+    border-left: 2px solid rgba(255,225,0,0.3);
+    padding: 1rem 1.5rem;
+  }
+
+  .formula-name {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .formula-eq {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--accent3);
+  }
+
+  .formula-meaning {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+
+  /* TIMELINE */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin-top: 3rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(var(--accent), var(--accent2), var(--accent3));
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 0 0 3rem 2rem;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -4px; top: 0.4rem;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .timeline-year {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+
+  .timeline-event {
+    font-size: 1.1rem;
+    color: #fff;
+    margin: 0.25rem 0;
+  }
+
+  .timeline-detail {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* QUIZ SECTION */
+  .quiz-box {
+    background: var(--surface);
+    border: 1px solid rgba(0,245,255,0.12);
+    padding: 3rem;
+    margin: 4rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quiz-box::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,245,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .quiz-question {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    line-height: 1.2;
+  }
+
+  .quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media(max-width:600px) { .quiz-options { grid-template-columns: 1fr; } }
+
+  .quiz-opt {
+    border: 1px solid rgba(0,245,255,0.15);
+    padding: 1.25rem 1.5rem;
+    background: transparent;
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .quiz-opt:hover {
+    border-color: var(--accent);
+    background: rgba(0,245,255,0.05);
+    color: var(--accent);
+  }
+
+  .quiz-opt.correct {
+    border-color: #00ff88;
+    background: rgba(0,255,136,0.1);
+    color: #00ff88;
+  }
+
+  .quiz-opt.wrong {
+    border-color: var(--accent2);
+    background: rgba(255,0,110,0.1);
+    color: var(--accent2);
+  }
+
+  .quiz-feedback {
+    margin-top: 1.5rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+    min-height: 1.5em;
+  }
+
+  .quiz-next {
+    margin-top: 1.5rem;
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    padding: 0.75rem 2rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    display: none;
+  }
+
+  .quiz-next:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(0,245,255,0.08);
+    padding: 4rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+
+  .footer-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--accent);
+  }
+
+  .footer-text {
+    font-size: 0.7rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .glow-text { animation: glow-pulse 3s ease infinite; }
+
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* BIG DECORATIVE TEXT */
+  .bg-text {
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(6rem, 20vw, 18rem);
+    color: rgba(0,245,255,0.025);
+    letter-spacing: -0.02em;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    z-index: 0;
+  }
+
+  .relative { position: relative; }
+
+  .topic-card.active-topic { background: rgba(0,245,255,0.06); }
+  .topic-card.active-topic::before { transform: scaleX(1); }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursor-trail"></div>
+
+<nav>
+  <div class="nav-logo">⚡ Eng.Physics</div>
+  <ul class="nav-links">
+    <li><a href="#topics">Topics</a></li>
+    <li><a href="#simulations">Simulations</a></li>
+    <li><a href="#formulas">Formulas</a></li>
+    <li><a href="#history">History</a></li>
+    <li><a href="#quiz">Quiz</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <canvas id="particle-canvas"></canvas>
+  <div class="hero-content">
+    <p class="hero-label">Engineering Physics — The Universe in Equations</p>
+    <h1 class="hero-title">
+      PHYSICS<br>
+      <span>IS POETRY</span>
+    </h1>
+    <p class="hero-subtitle">From quantum foam to cosmic web — master the laws that run reality</p>
+    <div class="hero-eq glow-text">E = mc² &nbsp;|&nbsp; ∇·E = ρ/ε₀ &nbsp;|&nbsp; ΔxΔp ≥ ℏ/2</div>
+  </div>
+  <div class="scroll-hint">SCROLL DOWN</div>
+</div>
+
+<!-- TOPICS -->
+<section id="topics">
+  <p class="section-tag reveal">Core Domains</p>
+  <h2 class="section-title reveal">THE PILLARS<br>OF PHYSICS</h2>
+  <p class="section-intro reveal">Seven fundamental domains. Each one rewrote humanity's understanding of existence.</p>
+
+  <div class="stat-banner reveal">
+    <div class="stat-item">
+      <span class="stat-num" data-target="299792458">0</span>
+      <div class="stat-label">Speed of Light (m/s)</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="6">0</span>
+      <div class="stat-label">×10²³ Avogadro's No.</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="9">0</span>
+      <div class="stat-label">×10⁻³¹ kg Electron Mass</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="13800000000">0</span>
+      <div class="stat-label">Years Since Big Bang</div>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" data-target="4">0</span>
+      <div class="stat-label">Fundamental Forces</div>
+    </div>
+  </div>
+
+  <div class="topics-grid reveal">
+
+    <div class="topic-card">
+      <div class="topic-num">01 / 07</div>
+      <span class="topic-icon">⚛️</span>
+      <div class="topic-name">Quantum Mechanics</div>
+      <div class="topic-desc">Reality at the atomic scale is stranger than fiction. Particles exist in superposition, tunnel through barriers, and become entangled across infinite distances.</div>
+      <div class="topic-eq">Ĥψ = iℏ ∂ψ/∂t — Schrödinger Equation</div>
+      <div class="topic-facts">
+        <div class="fact-item">Wave-particle duality: light is both wave and particle</div>
+        <div class="fact-item">Heisenberg's uncertainty: Δx·Δp ≥ ℏ/2 — measurement disturbs reality</div>
+        <div class="fact-item">Quantum tunneling enables nuclear fusion in stars</div>
+        <div class="fact-item">Basis of transistors, lasers, MRI machines & quantum computers</div>
+      </div>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">02 / 07</div>
+      <span class="topic-icon">🌊</span>
+      <div class="topic-name">Wave Optics</div>
+      <div class="topic-desc">Light waves interfere, diffract, and polarize. These phenomena power everything from holograms to fiber optic communications to LASIK surgery.</div>
+      <div class="topic-eq">d sin θ = mλ — Diffraction Grating</div>
+      <div class="topic-facts">
+        <div class="fact-item">Young's double slit: proof of light's wave nature (1801)</div>
+        <div class="fact-item">Thin film interference makes soap bubbles colorful</div>
+        <div class="fact-item">Brewster's angle: complete polarization of reflected light</div>
+        <div class="fact-item">Rayleigh scattering explains why the sky is blue</div>
+      </div>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">03 / 07</div>
+      <span class="topic-icon">🔋</span>
+      <div class="topic-name">Electromagnetism</div>
+      <div class="topic-desc">Maxwell unified electricity, magnetism and light into four elegant equations. Every electronic device, motor, and radio wave obeys these laws.</div>
+      <div class="topic-eq">∇ × B = μ₀J + μ₀ε₀ ∂E/∂t — Ampère-Maxwell</div>
+      <div class="topic-facts">
+        <div class="fact-item">Maxwell's equations predicted light is an EM wave</div>
+        <div class="fact-item">Faraday's law: changing B-field induces electric current</div>
+        <div class="fact-item">EM spectrum: from radio waves to gamma rays</div>
+        <div class="fact-item">Lorentz force: F = q(E + v × B)</div>
+      </div>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">04 / 07</div>
+      <span class="topic-icon">🌡️</span>
+      <div class="topic-name">Thermodynamics</div>
+      <div class="topic-desc">The science of energy, heat, and entropy. The arrow of time itself is a thermodynamic phenomenon — entropy always increases.</div>
+      <div class="topic-eq">dS ≥ dQ/T — Second Law (Clausius)</div>
+      <div class="topic-facts">
+        <div class="fact-item">Zeroth Law: thermal equilibrium defines temperature</div>
+        <div class="fact-item">First Law: energy is conserved, always</div>
+        <div class="fact-item">Carnot efficiency: η = 1 − T_cold/T_hot</div>
+        <div class="fact-item">Entropy explains why ice melts but never unmelts</div>
+      </div>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">05 / 07</div>
+      <span class="topic-icon">💎</span>
+      <div class="topic-name">Solid State Physics</div>
+      <div class="topic-desc">The quantum mechanics of solids. Band theory explains why some materials conduct electricity, some insulate, and some are semiconductors.</div>
+      <div class="topic-eq">E = ℏ²k²/2m* — Energy in a Band</div>
+      <div class="topic-facts">
+        <div class="fact-item">Valence & conduction bands: the secret of semiconductors</div>
+        <div class="fact-item">Doping: adding impurities to control conductivity</div>
+        <div class="fact-item">Superconductivity: zero resistance below critical temp</div>
+        <div class="fact-item">Every CPU, LED & solar cell uses solid state physics</div>
+      </div>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">06 / 07</div>
+      <span class="topic-icon">☢️</span>
+      <div class="topic-name">Nuclear Physics</div>
+      <div class="topic-desc">The strong force binds quarks into protons and neutrons. Nuclear reactions release millions of times more energy than chemical reactions.</div>
+      <div class="topic-eq">E = Δmc² — Mass-Energy Equivalence</div>
+      <div class="topic-facts">
+        <div class="fact-item">Binding energy per nucleon: iron-56 is the most stable</div>
+        <div class="fact-item">Fission splits heavy nuclei; fusion merges light ones</div>
+        <div class="fact-item">Radioactive decay follows N = N₀e^(−λt)</div>
+        <div class="fact-item">Stars are nuclear fusion reactors burning hydrogen</div>
+      </div>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">07 / 07</div>
+      <span class="topic-icon">🚀</span>
+      <div class="topic-name">Special Relativity</div>
+      <div class="topic-desc">Time dilates. Length contracts. Simultaneity is relative. Einstein's 1905 paper demolished absolute space and time with one thought experiment.</div>
+      <div class="topic-eq">t' = γ(t − vx/c²) — Lorentz Transform</div>
+      <div class="topic-facts">
+        <div class="fact-item">Time dilation: GPS satellites need relativistic corrections</div>
+        <div class="fact-item">Length contraction: objects shorten in direction of motion</div>
+        <div class="fact-item">Nothing with mass can reach the speed of light</div>
+        <div class="fact-item">E=mc²: 1g of matter = 90 trillion joules of energy</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SIMULATIONS -->
+<section id="simulations" style="max-width:100%; padding: 6rem 3rem;">
+  <div style="max-width:1300px; margin:0 auto;">
+    <p class="section-tag reveal">Interactive Lab</p>
+    <h2 class="section-title reveal">LIVE<br>SIMULATIONS</h2>
+    <p class="section-intro reveal">Adjust parameters. Watch physics happen in real time.</p>
+
+    <div class="sim-wrapper reveal">
+
+      <!-- SHM Simulation -->
+      <div class="sim-box">
+        <div class="sim-title">Simple Harmonic Motion</div>
+        <div class="sim-desc">x(t) = A cos(ωt + φ) — spring-mass oscillator</div>
+        <canvas class="sim-canvas" id="shm-canvas"></canvas>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <label>AMPLITUDE: <span id="amp-val">60</span>px</label>
+            <input type="range" id="amp-slider" min="10" max="90" value="60">
+          </div>
+          <div class="ctrl-group">
+            <label>FREQUENCY: <span id="freq-val">1.0</span>Hz</label>
+            <input type="range" id="freq-slider" min="1" max="30" value="10">
+          </div>
+        </div>
+      </div>
+
+      <!-- Wave Interference -->
+      <div class="sim-box">
+        <div class="sim-title">Wave Interference</div>
+        <div class="sim-desc">Two-source interference: constructive & destructive patterns</div>
+        <canvas class="sim-canvas" id="wave-canvas"></canvas>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <label>WAVELENGTH: <span id="wl-val">40</span>px</label>
+            <input type="range" id="wl-slider" min="15" max="80" value="40">
+          </div>
+          <div class="ctrl-group">
+            <label>SOURCE SEP: <span id="sep-val">80</span>px</label>
+            <input type="range" id="sep-slider" min="20" max="150" value="80">
+          </div>
+        </div>
+      </div>
+
+      <!-- Projectile Motion -->
+      <div class="sim-box">
+        <div class="sim-title">Projectile Motion</div>
+        <div class="sim-desc">x = v₀cos(θ)t, y = v₀sin(θ)t − ½gt²</div>
+        <canvas class="sim-canvas" id="proj-canvas"></canvas>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <label>ANGLE: <span id="angle-val">45</span>°</label>
+            <input type="range" id="angle-slider" min="5" max="85" value="45">
+          </div>
+          <div class="ctrl-group">
+            <label>VELOCITY: <span id="vel-val">50</span>m/s</label>
+            <input type="range" id="vel-slider" min="10" max="100" value="50">
+          </div>
+        </div>
+        <button class="quiz-next" id="launch-btn" style="display:block; margin-top:1rem;">▶ LAUNCH</button>
+      </div>
+
+      <!-- Lissajous -->
+      <div class="sim-box">
+        <div class="sim-title">Lissajous Figures</div>
+        <div class="sim-desc">Superposition of two perpendicular oscillations</div>
+        <canvas class="sim-canvas" id="liss-canvas"></canvas>
+        <div class="sim-controls">
+          <div class="ctrl-group">
+            <label>ω_x : <span id="lx-val">3</span></label>
+            <input type="range" id="lx-slider" min="1" max="7" value="3">
+          </div>
+          <div class="ctrl-group">
+            <label>ω_y : <span id="ly-val">2</span></label>
+            <input type="range" id="ly-slider" min="1" max="7" value="2">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FORMULAS -->
+<section id="formulas">
+  <p class="section-tag reveal">Reference</p>
+  <h2 class="section-title reveal">MASTER<br>FORMULA SHEET</h2>
+
+  <div class="formula-board reveal">
+    <div class="formula-grid">
+      <div class="formula-item">
+        <div class="formula-name">Newton's 2nd Law</div>
+        <div class="formula-eq">F = ma</div>
+        <div class="formula-meaning">Net force = mass × acceleration</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Mass-Energy</div>
+        <div class="formula-eq">E = mc²</div>
+        <div class="formula-meaning">Energy equivalent of mass</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Wave Equation</div>
+        <div class="formula-eq">v = fλ</div>
+        <div class="formula-meaning">velocity = frequency × wavelength</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Coulomb's Law</div>
+        <div class="formula-eq">F = kq₁q₂/r²</div>
+        <div class="formula-meaning">Electrostatic force between charges</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Photoelectric Effect</div>
+        <div class="formula-eq">E = hf − φ</div>
+        <div class="formula-meaning">Photon energy minus work function</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">De Broglie</div>
+        <div class="formula-eq">λ = h/mv</div>
+        <div class="formula-meaning">Matter wavelength</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Snell's Law</div>
+        <div class="formula-eq">n₁sinθ₁ = n₂sinθ₂</div>
+        <div class="formula-meaning">Refraction at interface</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Entropy</div>
+        <div class="formula-eq">S = k_B ln Ω</div>
+        <div class="formula-meaning">Boltzmann's entropy formula</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Lorentz Factor</div>
+        <div class="formula-eq">γ = 1/√(1−v²/c²)</div>
+        <div class="formula-meaning">Relativistic scaling factor</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Radioactive Decay</div>
+        <div class="formula-eq">N = N₀e^(−λt)</div>
+        <div class="formula-meaning">Exponential decay law</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Band Gap Energy</div>
+        <div class="formula-eq">E_g = hc/λ</div>
+        <div class="formula-meaning">Photon energy at gap wavelength</div>
+      </div>
+      <div class="formula-item">
+        <div class="formula-name">Uncertainty Principle</div>
+        <div class="formula-eq">ΔxΔp ≥ ℏ/2</div>
+        <div class="formula-meaning">Position-momentum uncertainty</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORY TIMELINE -->
+<section id="history">
+  <p class="section-tag reveal">Timeline</p>
+  <h2 class="section-title reveal">300 YEARS<br>OF BREAKTHROUGHS</h2>
+
+  <div class="timeline reveal">
+    <div class="timeline-item">
+      <div class="timeline-year">1687</div>
+      <div class="timeline-event">Newton's Principia Mathematica</div>
+      <div class="timeline-detail">Laws of motion and universal gravitation — the founding text of classical physics.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1801</div>
+      <div class="timeline-event">Young's Double Slit Experiment</div>
+      <div class="timeline-detail">Light passes through two slits and creates an interference pattern — proving it's a wave.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1865</div>
+      <div class="timeline-event">Maxwell's Equations</div>
+      <div class="timeline-detail">Four equations that unified electricity, magnetism, and light into one electromagnetic theory.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1900</div>
+      <div class="timeline-event">Planck's Quantum Hypothesis</div>
+      <div class="timeline-detail">Energy is not continuous — it comes in discrete quanta: E = hf. Birth of quantum theory.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1905</div>
+      <div class="timeline-event">Einstein's Annus Mirabilis</div>
+      <div class="timeline-detail">Special relativity, photoelectric effect, and Brownian motion — all in a single year.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1926</div>
+      <div class="timeline-event">Schrödinger's Wave Equation</div>
+      <div class="timeline-detail">The equation governing quantum state evolution — the heart of modern quantum mechanics.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1945</div>
+      <div class="timeline-event">First Nuclear Reaction (Manhattan Project)</div>
+      <div class="timeline-detail">E = mc² becomes devastatingly real. Nuclear age begins.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">1947</div>
+      <div class="timeline-event">Transistor Invented (Bell Labs)</div>
+      <div class="timeline-detail">Solid state physics creates the building block of all modern electronics.</div>
+    </div>
+    <div class="timeline-item">
+      <div class="timeline-year">2012</div>
+      <div class="timeline-event">Higgs Boson Discovered (CERN)</div>
+      <div class="timeline-detail">The "God particle" confirms the Standard Model of particle physics — 50 years after prediction.</div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz">
+  <p class="section-tag reveal">Test Yourself</p>
+  <h2 class="section-title reveal">PHYSICS<br>CHALLENGE</h2>
+
+  <div class="quiz-box reveal">
+    <div class="quiz-question" id="quiz-question">Loading question...</div>
+    <div class="quiz-options" id="quiz-options"></div>
+    <div class="quiz-feedback" id="quiz-feedback"></div>
+    <button class="quiz-next" id="quiz-next-btn" onclick="nextQuestion()">NEXT QUESTION →</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-title">⚡ PHYSICS</div>
+    <div class="footer-text">Engineering Physics Project<br>The universe runs on these equations.</div>
+  </div>
+  <div class="footer-text" style="text-align:right;">
+    E = mc² &nbsp; ∇·E = ρ/ε₀<br>
+    ΔxΔp ≥ ℏ/2 &nbsp; S = k_B ln Ω<br>
+    <span style="color: var(--accent)">Physics is not just a subject.</span><br>
+    It is the language of reality.
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════
+// CUSTOM CURSOR
+// ═══════════════════════════════════════
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursor-trail');
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx - 6 + 'px';
+  cursor.style.top = my - 6 + 'px';
+  setTimeout(() => {
+    trail.style.left = mx - 15 + 'px';
+    trail.style.top = my - 15 + 'px';
+  }, 60);
+});
+
+// ═══════════════════════════════════════
+// PARTICLE HERO CANVAS
+// ═══════════════════════════════════════
+const pCanvas = document.getElementById('particle-canvas');
+const pCtx = pCanvas.getContext('2d');
+let particles = [];
+
+function resizePC() {
+  pCanvas.width = window.innerWidth;
+  pCanvas.height = window.innerHeight;
+}
+resizePC();
+window.addEventListener('resize', resizePC);
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * pCanvas.width;
+    this.y = Math.random() * pCanvas.height;
+    this.vx = (Math.random() - 0.5) * 0.6;
+    this.vy = (Math.random() - 0.5) * 0.6;
+    this.r = Math.random() * 2 + 0.5;
+    this.alpha = Math.random() * 0.6 + 0.2;
+    this.color = Math.random() > 0.7 ? '#ff006e' : Math.random() > 0.5 ? '#ffe100' : '#00f5ff';
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    if (this.x < 0 || this.x > pCanvas.width || this.y < 0 || this.y > pCanvas.height) this.reset();
+  }
+  draw() {
+    pCtx.beginPath();
+    pCtx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    pCtx.fillStyle = this.color;
+    pCtx.globalAlpha = this.alpha;
+    pCtx.fill();
+    pCtx.globalAlpha = 1;
+  }
+}
+
+for (let i = 0; i < 180; i++) particles.push(new Particle());
+
+// Draw connections between nearby particles
+function drawConnections() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        pCtx.beginPath();
+        pCtx.strokeStyle = '#00f5ff';
+        pCtx.globalAlpha = (1 - dist/100) * 0.15;
+        pCtx.lineWidth = 0.5;
+        pCtx.moveTo(particles[i].x, particles[i].y);
+        pCtx.lineTo(particles[j].x, particles[j].y);
+        pCtx.stroke();
+        pCtx.globalAlpha = 1;
+      }
+    }
+  }
+}
+
+function animParticles() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  drawConnections();
+  particles.forEach(p => { p.update(); p.draw(); });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// ═══════════════════════════════════════
+// SCROLL REVEAL
+// ═══════════════════════════════════════
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+reveals.forEach(r => observer.observe(r));
+
+// ═══════════════════════════════════════
+// COUNTER ANIMATION
+// ═══════════════════════════════════════
+const counters = document.querySelectorAll('[data-target]');
+const countObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = +el.dataset.target;
+    const display = [299792458, 13800000000].includes(target);
+    let start = 0, duration = 1800;
+    const startTime = performance.now();
+    function update(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      const val = Math.floor(t * target);
+      el.textContent = display ? val.toLocaleString() : val;
+      if (t < 1) requestAnimationFrame(update);
+      else el.textContent = display ? target.toLocaleString() : target;
+    }
+    requestAnimationFrame(update);
+    countObs.unobserve(el);
+  });
+}, { threshold: 0.5 });
+counters.forEach(c => countObs.observe(c));
+
+// ═══════════════════════════════════════
+// SHM SIMULATION
+// ═══════════════════════════════════════
+const shmCanvas = document.getElementById('shm-canvas');
+const shmCtx = shmCanvas.getContext('2d');
+shmCanvas.width = shmCanvas.offsetWidth || 400;
+shmCanvas.height = 220;
+
+let shmAmp = 60, shmFreq = 1.0, shmT = 0;
+let shmHistory = [];
+
+document.getElementById('amp-slider').addEventListener('input', function() {
+  shmAmp = +this.value;
+  document.getElementById('amp-val').textContent = shmAmp;
+  shmHistory = [];
+});
+document.getElementById('freq-slider').addEventListener('input', function() {
+  shmFreq = this.value / 10;
+  document.getElementById('freq-val').textContent = shmFreq.toFixed(1);
+  shmHistory = [];
+});
+
+function drawSHM() {
+  shmCanvas.width = shmCanvas.offsetWidth;
+  const W = shmCanvas.width, H = 220, cy = H / 2;
+  shmCtx.clearRect(0, 0, W, H);
+
+  // Grid
+  shmCtx.strokeStyle = 'rgba(0,245,255,0.07)';
+  shmCtx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) { shmCtx.beginPath(); shmCtx.moveTo(x,0); shmCtx.lineTo(x,H); shmCtx.stroke(); }
+  for (let y = 0; y < H; y += 40) { shmCtx.beginPath(); shmCtx.moveTo(0,y); shmCtx.lineTo(W,y); shmCtx.stroke(); }
+
+  // Axis
+  shmCtx.strokeStyle = 'rgba(0,245,255,0.2)';
+  shmCtx.lineWidth = 1;
+  shmCtx.beginPath(); shmCtx.moveTo(0, cy); shmCtx.lineTo(W, cy); shmCtx.stroke();
+
+  // Wave trail
+  shmHistory.push(cy - shmAmp * Math.cos(2 * Math.PI * shmFreq * shmT));
+  if (shmHistory.length > W) shmHistory.shift();
+
+  shmCtx.beginPath();
+  shmCtx.strokeStyle = '#00f5ff';
+  shmCtx.lineWidth = 2;
+  shmCtx.shadowColor = '#00f5ff';
+  shmCtx.shadowBlur = 8;
+  shmHistory.forEach((y, i) => {
+    if (i === 0) shmCtx.moveTo(i, y); else shmCtx.lineTo(i, y);
+  });
+  shmCtx.stroke();
+  shmCtx.shadowBlur = 0;
+
+  // Ball on spring
+  const ballX = W - 60;
+  const ballY = cy - shmAmp * Math.cos(2 * Math.PI * shmFreq * shmT);
+
+  // Spring
+  shmCtx.beginPath();
+  shmCtx.strokeStyle = '#ffe100';
+  shmCtx.lineWidth = 1.5;
+  const springTop = 10, springSteps = 12;
+  const springH = ballY - springTop - 10;
+  for (let i = 0; i <= springSteps; i++) {
+    const sy = springTop + (springH / springSteps) * i;
+    const sx = ballX + (i % 2 === 0 ? -10 : 10);
+    if (i === 0) shmCtx.moveTo(ballX, springTop);
+    shmCtx.lineTo(sx, sy);
+  }
+  shmCtx.lineTo(ballX, ballY);
+  shmCtx.stroke();
+
+  // Ball
+  const grad = shmCtx.createRadialGradient(ballX-3, ballY-3, 1, ballX, ballY, 14);
+  grad.addColorStop(0, '#ffffff');
+  grad.addColorStop(1, 'rgba(0,245,255,0.4)');
+  shmCtx.beginPath();
+  shmCtx.arc(ballX, ballY, 14, 0, Math.PI*2);
+  shmCtx.fillStyle = grad;
+  shmCtx.shadowColor = '#00f5ff';
+  shmCtx.shadowBlur = 20;
+  shmCtx.fill();
+  shmCtx.shadowBlur = 0;
+
+  shmT += 0.016;
+}
+
+// ═══════════════════════════════════════
+// WAVE INTERFERENCE SIMULATION
+// ═══════════════════════════════════════
+const wCanvas = document.getElementById('wave-canvas');
+const wCtx = wCanvas.getContext('2d');
+wCanvas.width = 400; wCanvas.height = 220;
+let wWL = 40, wSep = 80, wTime = 0;
+
+document.getElementById('wl-slider').addEventListener('input', function() {
+  wWL = +this.value; document.getElementById('wl-val').textContent = wWL;
+});
+document.getElementById('sep-slider').addEventListener('input', function() {
+  wSep = +this.value; document.getElementById('sep-val').textContent = wSep;
+});
+
+function drawWaves() {
+  wCanvas.width = wCanvas.offsetWidth;
+  const W = wCanvas.width, H = 220;
+  const imageData = wCtx.createImageData(W, H);
+  const s1x = W/2 - wSep/2, s1y = H/2;
+  const s2x = W/2 + wSep/2, s2y = H/2;
+
+  for (let px = 0; px < W; px++) {
+    for (let py = 0; py < H; py++) {
+      const d1 = Math.sqrt((px-s1x)**2 + (py-s1y)**2);
+      const d2 = Math.sqrt((px-s2x)**2 + (py-s2y)**2);
+      const amp1 = Math.sin(2*Math.PI*(d1/wWL - wTime));
+      const amp2 = Math.sin(2*Math.PI*(d2/wWL - wTime));
+      const total = (amp1 + amp2) / 2;
+      const idx = (py * W + px) * 4;
+      if (total > 0) {
+        imageData.data[idx]   = 0;
+        imageData.data[idx+1] = Math.floor(total * 245);
+        imageData.data[idx+2] = Math.floor(total * 255);
+      } else {
+        imageData.data[idx]   = Math.floor(-total * 255);
+        imageData.data[idx+1] = 0;
+        imageData.data[idx+2] = Math.floor(-total * 110);
+      }
+      imageData.data[idx+3] = 220;
+    }
+  }
+  wCtx.putImageData(imageData, 0, 0);
+
+  // Source dots
+  [s1x, s2x].forEach(sx => {
+    wCtx.beginPath();
+    wCtx.arc(sx, s1y, 5, 0, Math.PI*2);
+    wCtx.fillStyle = '#ffe100';
+    wCtx.shadowColor = '#ffe100';
+    wCtx.shadowBlur = 10;
+    wCtx.fill();
+    wCtx.shadowBlur = 0;
+  });
+
+  wTime += 0.03;
+}
+
+// ═══════════════════════════════════════
+// PROJECTILE SIMULATION
+// ═══════════════════════════════════════
+const pjCanvas = document.getElementById('proj-canvas');
+const pjCtx = pjCanvas.getContext('2d');
+pjCanvas.width = 400; pjCanvas.height = 220;
+let pjAngle = 45, pjVel = 50, pjRunning = false;
+let pjT = 0, pjPath = [];
+
+document.getElementById('angle-slider').addEventListener('input', function() {
+  pjAngle = +this.value; document.getElementById('angle-val').textContent = pjAngle;
+  pjReset();
+});
+document.getElementById('vel-slider').addEventListener('input', function() {
+  pjVel = +this.value; document.getElementById('vel-val').textContent = pjVel;
+  pjReset();
+});
+
+document.getElementById('launch-btn').addEventListener('click', () => {
+  pjReset(); pjRunning = true;
+});
+
+function pjReset() {
+  pjRunning = false; pjT = 0; pjPath = [];
+}
+
+function drawProjectile() {
+  pjCanvas.width = pjCanvas.offsetWidth;
+  const W = pjCanvas.width, H = 220;
+  const g = 9.8, scale = 2.5;
+  const ox = 40, oy = H - 30;
+  const rad = pjAngle * Math.PI / 180;
+
+  pjCtx.clearRect(0, 0, W, H);
+
+  // Grid
+  pjCtx.strokeStyle = 'rgba(0,245,255,0.06)';
+  pjCtx.lineWidth = 1;
+  for (let x=0;x<W;x+=40){pjCtx.beginPath();pjCtx.moveTo(x,0);pjCtx.lineTo(x,H);pjCtx.stroke();}
+  for (let y=0;y<H;y+=40){pjCtx.beginPath();pjCtx.moveTo(0,y);pjCtx.lineTo(W,y);pjCtx.stroke();}
+
+  // Ground
+  pjCtx.strokeStyle = 'rgba(0,245,255,0.3)';
+  pjCtx.lineWidth = 1;
+  pjCtx.beginPath(); pjCtx.moveTo(0, oy); pjCtx.lineTo(W, oy); pjCtx.stroke();
+
+  if (pjRunning) {
+    pjT += 0.04;
+    const x = pjVel * Math.cos(rad) * pjT * scale + ox;
+    const y = oy - (pjVel * Math.sin(rad) * pjT - 0.5 * g * pjT * pjT) * scale;
+    if (y < oy) pjPath.push({x, y});
+    else { pjRunning = false; }
+  }
+
+  // Trail
+  if (pjPath.length > 1) {
+    pjCtx.beginPath();
+    pjCtx.strokeStyle = 'rgba(0,245,255,0.4)';
+    pjCtx.lineWidth = 1.5;
+    pjCtx.setLineDash([3, 5]);
+    pjPath.forEach((p, i) => { if(i===0) pjCtx.moveTo(p.x, p.y); else pjCtx.lineTo(p.x, p.y); });
+    pjCtx.stroke();
+    pjCtx.setLineDash([]);
+  }
+
+  // Ball
+  const curX = pjRunning && pjPath.length > 0 ? pjPath[pjPath.length-1].x : ox;
+  const curY = pjRunning && pjPath.length > 0 ? pjPath[pjPath.length-1].y : oy;
+  pjCtx.beginPath();
+  pjCtx.arc(curX, curY, 8, 0, Math.PI*2);
+  pjCtx.fillStyle = '#ff006e';
+  pjCtx.shadowColor = '#ff006e';
+  pjCtx.shadowBlur = 15;
+  pjCtx.fill();
+  pjCtx.shadowBlur = 0;
+
+  // Angle indicator
+  pjCtx.strokeStyle = '#ffe100';
+  pjCtx.lineWidth = 1.5;
+  pjCtx.beginPath();
+  pjCtx.moveTo(ox, oy);
+  pjCtx.lineTo(ox + 35*Math.cos(rad), oy - 35*Math.sin(rad));
+  pjCtx.stroke();
+  pjCtx.fillStyle = '#ffe100';
+  pjCtx.font = '10px Space Mono';
+  pjCtx.fillText(pjAngle + '°', ox + 15, oy - 8);
+}
+
+// ═══════════════════════════════════════
+// LISSAJOUS SIMULATION
+// ═══════════════════════════════════════
+const lCanvas = document.getElementById('liss-canvas');
+const lCtx = lCanvas.getContext('2d');
+lCanvas.width = 400; lCanvas.height = 220;
+let lx = 3, ly = 2, lTime = 0;
+
+document.getElementById('lx-slider').addEventListener('input', function() {
+  lx = +this.value; document.getElementById('lx-val').textContent = lx; lTime=0;
+});
+document.getElementById('ly-slider').addEventListener('input', function() {
+  ly = +this.value; document.getElementById('ly-val').textContent = ly; lTime=0;
+});
+
+function drawLissajous() {
+  lCanvas.width = lCanvas.offsetWidth;
+  const W = lCanvas.width, H = 220, cx = W/2, cy = H/2;
+  const A = Math.min(W,H)/2 - 20;
+
+  lCtx.clearRect(0, 0, W, H);
+
+  // Draw complete Lissajous with fade
+  lCtx.beginPath();
+  const steps = 1000;
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * Math.PI * 2 * (ly / (gcd(lx,ly)));
+    const px = cx + A * Math.sin(lx * t + lTime);
+    const py = cy + A * Math.sin(ly * t);
+    if (i === 0) lCtx.moveTo(px, py); else lCtx.lineTo(px, py);
+  }
+  lCtx.strokeStyle = '#00f5ff';
+  lCtx.lineWidth = 1.5;
+  lCtx.shadowColor = '#00f5ff';
+  lCtx.shadowBlur = 6;
+  lCtx.stroke();
+  lCtx.shadowBlur = 0;
+
+  // Moving dot
+  const dotX = cx + A * Math.sin(lx * lTime + lTime);
+  const dotY = cy + A * Math.sin(ly * lTime);
+  lCtx.beginPath();
+  lCtx.arc(dotX, dotY, 5, 0, Math.PI*2);
+  lCtx.fillStyle = '#ffe100';
+  lCtx.shadowColor = '#ffe100';
+  lCtx.shadowBlur = 15;
+  lCtx.fill();
+  lCtx.shadowBlur = 0;
+
+  lTime += 0.02;
+}
+
+function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+
+// ═══════════════════════════════════════
+// MAIN ANIMATION LOOP
+// ═══════════════════════════════════════
+function mainLoop() {
+  drawSHM();
+  drawWaves();
+  drawProjectile();
+  drawLissajous();
+  requestAnimationFrame(mainLoop);
+}
+mainLoop();
+
+// ═══════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════
+const quizData = [
+  {
+    q: "What does the Schrödinger equation describe?",
+    opts: ["Electron spin states", "Evolution of quantum wavefunctions", "Nuclear binding energy", "Relativistic time dilation"],
+    ans: 1,
+    explain: "The Schrödinger equation governs how the quantum state (wavefunction ψ) of a system evolves over time."
+  },
+  {
+    q: "What is the significance of E = mc²?",
+    opts: ["Energy equals magnetic charge squared", "Mass and energy are interchangeable", "Electric field times capacitance", "Entropy of a closed system"],
+    ans: 1,
+    explain: "Einstein showed mass and energy are two forms of the same thing, with c² (≈9×10¹⁶) as the conversion factor."
+  },
+  {
+    q: "In Young's double slit experiment, bright fringes occur when:",
+    opts: ["Path difference = (n+½)λ", "Path difference = nλ", "Wavelength equals slit width", "Speed of light is exceeded"],
+    ans: 1,
+    explain: "Constructive interference (bright fringes) occurs when the path difference is an integer multiple of the wavelength: Δd = nλ."
+  },
+  {
+    q: "Which law states that entropy of an isolated system always increases?",
+    opts: ["First Law of Thermodynamics", "Zeroth Law", "Second Law of Thermodynamics", "Boyle's Law"],
+    ans: 2,
+    explain: "The Second Law states that in any spontaneous process, the total entropy of an isolated system never decreases."
+  },
+  {
+    q: "The de Broglie wavelength of a particle is given by:",
+    opts: ["λ = mv/h", "λ = h/mv", "λ = hv/m", "λ = m/hv"],
+    ans: 1,
+    explain: "λ = h/mv — Louis de Broglie (1924) proposed all matter has an associated wavelength, verified experimentally."
+  },
+  {
+    q: "Heisenberg's Uncertainty Principle states that:",
+    opts: ["Energy is always conserved", "Position and momentum cannot both be precisely known", "Electrons occupy discrete energy levels", "Light travels at constant speed"],
+    ans: 1,
+    explain: "ΔxΔp ≥ ℏ/2 — the more precisely you know position, the less precisely you can know momentum, and vice versa."
+  },
+  {
+    q: "In semiconductor physics, what does 'n-type doping' mean?",
+    opts: ["Adding electron acceptors", "Adding electron donors to create free electrons", "Removing all impurities", "Cooling the semiconductor to 0 K"],
+    ans: 1,
+    explain: "N-type doping introduces donor atoms (like phosphorus in silicon) that release extra electrons as majority charge carriers."
+  },
+  {
+    q: "What is the Lorentz factor γ when v = 0.6c?",
+    opts: ["0.8", "1.0", "1.25", "1.67"],
+    ans: 2,
+    explain: "γ = 1/√(1−0.36) = 1/√0.64 = 1/0.8 = 1.25. At 60% the speed of light, time dilates by a factor of 1.25."
+  }
+];
+
+let currentQ = 0, answered = false;
+
+function loadQuestion() {
+  answered = false;
+  const q = quizData[currentQ];
+  document.getElementById('quiz-question').textContent = `Q${currentQ+1}. ${q.q}`;
+  const opts = document.getElementById('quiz-options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt';
+    btn.textContent = `${String.fromCharCode(65+i)}) ${opt}`;
+    btn.onclick = () => checkAnswer(i);
+    opts.appendChild(btn);
+  });
+  document.getElementById('quiz-feedback').textContent = '';
+  document.getElementById('quiz-next-btn').style.display = 'none';
+}
+
+function checkAnswer(idx) {
+  if (answered) return;
+  answered = true;
+  const q = quizData[currentQ];
+  const btns = document.querySelectorAll('.quiz-opt');
+  btns.forEach((btn, i) => {
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === idx) btn.classList.add('wrong');
+    btn.style.pointerEvents = 'none';
+  });
+  const fb = document.getElementById('quiz-feedback');
+  fb.style.color = idx === q.ans ? '#00ff88' : '#ff006e';
+  fb.textContent = idx === q.ans ? `✓ Correct! ${q.explain}` : `✗ Wrong. ${q.explain}`;
+  document.getElementById('quiz-next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+  currentQ = (currentQ + 1) % quizData.length;
+  loadQuestion();
+}
+
+loadQuestion();
+
+// ═══════════════════════════════════════
+// NAV HIDE ON SCROLL UP
+// ═══════════════════════════════════════
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const s = window.scrollY;
+  document.querySelector('nav').style.transform = s > lastScroll && s > 200 ? 'translateY(-100%)' : 'translateY(0)';
+  lastScroll = s;
+  document.querySelector('nav').style.transition = 'transform 0.4s ease';
+});
+</script>
+</body>
+</html>

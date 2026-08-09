@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8"/>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0"/>
+
+    <title>ErfSolve</title>
+
+    <link rel="stylesheet" href="style.css"/>
+
+    <!-- GOOGLE FONT -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+
+    <!-- MATHJAX -->
+
+    <script>
+
+        window.MathJax = {
+
+            tex: {
+
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+
+            }
+
+        };
+
+    </script>
+
+    <script defer
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+</head>
+
+<body>
+
+    <!-- BACKGROUND -->
+
+    <div class="bg"></div>
+
+
+    <!-- MAIN CONTAINER -->
+
+    <div class="container">
+
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <div class="badge">
+                Engineering Mathematics Mini Project
+            </div>
+
+            <h1>
+                Erf<span>Solve</span>
+            </h1>
+
+            <p>
+                Error Function · Complementary Error Function · Inverse Error Function
+            </p>
+
+        </div>
+
+
+
+        <!-- DEFINITION SECTION -->
+
+        <div class="definition glass">
+
+            <h3>
+                Mathematical Definitions
+            </h3>
+
+
+            <div class="math">
+
+                \( erf(x) =
+                \frac{2}{\sqrt{\pi}}
+                \int_0^x e^{-t^2}dt \)
+
+            </div>
+
+
+            <div class="math">
+
+                \( erfc(x) = 1-erf(x) \)
+
+            </div>
+
+
+            <div class="math">
+
+                \( erfinv(y) : erf(x)=y \)
+
+            </div>
+
+
+            <p>
+
+                The Error Function is widely used in
+                engineering mathematics, probability,
+                Gaussian distribution, communication systems,
+                numerical methods and heat transfer analysis.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- INPUT CONTROLS -->
+
+        <div class="controls glass">
+
+
+            <!-- INPUT VALUE -->
+
+            <div class="field">
+
+                <label>
+                    Enter Value
+                </label>
+
+                <input type="text"
+                       id="xval"
+                       placeholder="Enter x, Infinity or -Infinity">
+
+            </div>
+
+
+
+            <!-- FUNCTION SELECT -->
+
+            <div class="field">
+
+                <label>
+                    Select Function
+                </label>
+
+                <select id="func">
+
+                    <option value="erf">
+                        erf(x)
+                    </option>
+
+                    <option value="erfc">
+                        erfc(x)
+                    </option>
+
+                    <option value="erfinv">
+                        erfinv(y)
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- BUTTON -->
+
+            <button id="solveBtn">
+
+                Show Full Solution
+
+            </button>
+
+        </div>
+
+
+
+        <!-- RESULT SECTION -->
+
+        <div class="result glass"
+             id="resultPanel">
+
+
+            <!-- TOP RESULT -->
+
+            <div class="resultTop">
+
+                <div>
+
+                    <span>
+                        Expression
+                    </span>
+
+                    <h2 id="expr"></h2>
+
+                </div>
+
+
+                <div class="value">
+
+                    <span>
+                        Result
+                    </span>
+
+                    <h1 id="value"></h1>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- TABS -->
+
+            <div class="tabs">
+
+                <button class="tab active"
+                        data-tab="steps">
+
+                    Steps
+
+                </button>
+
+
+                <button class="tab"
+                        data-tab="series">
+
+                    Series Expansion
+
+                </button>
+
+
+                <button class="tab"
+                        data-tab="properties">
+
+                    Properties
+
+                </button>
+
+            </div>
+
+
+
+            <!-- CONTENT -->
+
+            <div class="content">
+
+
+                <!-- STEPWISE SOLUTION -->
+
+                <div class="tabContent active"
+                     id="steps">
+
+                </div>
+
+
+
+                <!-- SERIES TABLE -->
+
+                <div class="tabContent"
+                     id="series">
+
+                </div>
+
+
+
+                <!-- PROPERTIES -->
+
+                <div class="tabContent"
+                     id="properties">
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

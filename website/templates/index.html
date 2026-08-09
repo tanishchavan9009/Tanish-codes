@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Smart Password Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>🔐 Smart Password Generator</h1>
+    <p>Create strong and secure passwords instantly</p>
+
+    <form method="POST">
+        <label>Difficulty Level</label>
+        <select name="difficulty">
+            <option value="simple">Simple</option>
+            <option value="hard">Hard</option>
+            <option value="difficult">Difficult</option>
+            <option value="very difficult">Very Difficult</option>
+        </select>
+
+        <label>Password Length</label>
+        <input type="number" name="length" min="4" max="30" required>
+<label>Select Characters to Include</label>
+
+<div class="checkbox-group">
+    <label><input type="checkbox" name="include_letters" checked> Alphabets</label>
+    <label><input type="checkbox" name="include_numbers"> Numbers</label>
+    <label><input type="checkbox" name="include_special"> Special Characters</label>
+</div>
+        <button type="submit">Generate Password</button>
+    </form>
+
+    {% if password %}
+    <div class="result">
+        <h2>Generated Password</h2>
+        <input type="text" id="passwordField" value="{{ password }}" readonly>
+        <button onclick="copyPassword()">📋 Copy</button>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function copyPassword() {
+    let copyText = document.getElementById("passwordField");
+    copyText.select();
+    document.execCommand("copy");
+    alert("Password copied!");
+}
+</script>
+
+</body>
+</html>
