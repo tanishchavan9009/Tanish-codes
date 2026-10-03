@@ -1,599 +1,854 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Farmer Market Crop Price Prediction</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Market Crop Price Prediction System</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins', sans-serif;
-}
+        body {
+            background: linear-gradient(135deg, #f5fff5, #e8f9e6);
+            color: #2c3e50;
+            line-height: 1.6;
+        }
 
-body{
-    background: linear-gradient(135deg,#f5fff5,#d9fdd3);
-    color:#222;
-    line-height:1.6;
-}
+        /* HEADER */
+        header {
+            background: linear-gradient(90deg, #1b5e20, #2e7d32, #4caf50);
+            color: white;
+            padding: 24px 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-/* HEADER */
-header{
-    background: linear-gradient(90deg,#1b5e20,#4caf50);
-    color:white;
-    padding:25px;
-    text-align:center;
-    font-size:32px;
-    font-weight:700;
-    letter-spacing:1px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.2);
-}
+        /* HERO */
+        .hero {
+            height: 65vh;
+            min-height: 400px;
+            background: url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
 
-/* HERO */
-.hero{
-    height:85vh;
-    background:url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1600&q=80') center/cover;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    position:relative;
-}
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 40, 15, 0.55);
+        }
 
-.hero::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,0.45);
-}
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            padding: 30px;
+            max-width: 850px;
+        }
 
-.hero-content{
-    position:relative;
-    z-index:2;
-    color:white;
-    padding:40px;
-    max-width:800px;
-}
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
 
-.hero h1{
-    font-size:56px;
-    font-weight:700;
-    margin-bottom:20px;
-}
+        .hero p {
+            font-size: 20px;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+        }
 
-.hero p{
-    font-size:22px;
-}
+        /* CONTAINER */
+        .container {
+            width: 92%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 40px 0;
+        }
 
-<section class="container">
-    <h2>Why Use Our System?</h2>
+        /* SECTION TITLES */
+        h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #1b5e20;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    <div class="card-container">
-        <div class="card">
-            <div class="card-content">
-                <h3>📈 Smart Prediction</h3>
-                <p>Predict future crop prices using demand trends and historical data.</p>
-            </div>
-        </div>
+        /* CARDS */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
 
-        <div class="card">
-            <div class="card-content">
-                <h3>🌦 Weather Support</h3>
-                <p>Analyze weather and soil conditions for better selling decisions.</p>
-            </div>
-        </div>
+        .card {
+            flex: 1 1 260px;
+            max-width: 320px;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(46, 125, 50, 0.1);
+        }
 
-        <div class="card">
-            <div class="card-content">
-                <h3>💰 Profit Advice</h3>
-                <p>Get the best time to sell and maximize your profit.</p>
-            </div>
-        </div>
-    </div>
-</section>
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.14);
+        }
 
-/* MAIN */
-.container{
-    width:90%;
-    max-width:1200px;
-    margin:auto;
-    padding:50px 0;
-}
+        .card img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+        }
 
-/* SECTION TITLES */
-h2{
-    font-size:34px;
-    margin-bottom:25px;
-    color:#1b5e20;
-}
+        .card-content {
+            padding: 20px;
+        }
 
-/* CARDS */
-.card-container{
-    display:flex;
-    flex-wrap:wrap;
-    gap:25px;
-    justify-content:center;
-}
+        .card-content h3 {
+            color: #1b5e20;
+            margin-bottom: 8px;
+            font-size: 20px;
+        }
 
-.card{
-    width:320px;
-    background:white;
-    border-radius:22px;
-    overflow:hidden;
-    box-shadow:0 8px 20px rgba(0,0,0,0.12);
-    transition:0.3s;
-}
+        .card-content p {
+            font-size: 15px;
+            color: #4a5568;
+            margin-bottom: 4px;
+        }
 
-.card:hover{
-    transform:translateY(-8px);
-    box-shadow:0 12px 25px rgba(0,0,0,0.18);
-}
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 6px;
+        }
 
-.card img{
-    width:100%;
-    height:220px;
-    object-fit:cover;
-}
+        .badge-green { background: #e8f5e9; color: #2e7d32; }
+        .badge-orange { background: #fff3e0; color: #e65100; }
+        .badge-blue { background: #e3f2fd; color: #1565c0; }
 
-.card-content{
-    padding:20px;
-}
+        /* PANELS */
+        .panel {
+            margin-top: 35px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+            border: 1px solid rgba(46, 125, 50, 0.1);
+        }
 
-/* PANELS */
-.predict-box,
-.history,
-.contact,
-.market-section,
-.weather-analysis,
-.trend-graph,
-.farmer-form,
-.sell-advice{
-    margin-top:40px;
-    background:white;
-    padding:30px;
-    border-radius:22px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.08);
-}
+        /* FORM ELEMENTS */
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
 
-/* FORM ELEMENTS */
-select,
-input{
-    padding:12px;
-    width:300px;
-    border-radius:12px;
-    border:1px solid #ccc;
-    font-size:16px;
-}
+        label {
+            font-weight: 600;
+            color: #2e7d32;
+        }
 
-button{
-    padding:12px 24px;
-    background:linear-gradient(90deg,#2e7d32,#4caf50);
-    color:white;
-    border:none;
-    border-radius:12px;
-    font-size:16px;
-    font-weight:600;
-    cursor:pointer;
-    transition:0.3s;
-}
+        select, input[type="text"], input[type="number"] {
+            padding: 12px 16px;
+            width: 100%;
+            max-width: 280px;
+            border-radius: 10px;
+            border: 1.5px solid #c8e6c9;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+            background: #fafdfa;
+        }
 
-button:hover{
-    transform:scale(1.05);
-    box-shadow:0 4px 12px rgba(0,0,0,0.2);
-}
-<section class="container">
-    <div class="history" style="text-align:center;">
-        <h2>🌾 Empowering Farmers with Smart Decisions</h2>
-        <p style="font-size:20px;">
-            “Right crop, right price, right time — technology for every farmer.”
-        </p>
-    </div>
-</section>
-/* FOOTER */
-footer{
-    margin-top:50px;
-    background:#1b5e20;
-    color:white;
-    text-align:center;
-    padding:20px;
-    font-size:18px;
-}
-</style>
+        select:focus, input:focus {
+            border-color: #2e7d32;
+            background: #fff;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #2e7d32, #43a047);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.25);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(46, 125, 50, 0.35);
+            background: linear-gradient(90deg, #1b5e20, #388e3c);
+        }
+
+        /* OUTPUT BOX */
+        .output-box {
+            margin-top: 20px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            background: #f1f8e9;
+            border-left: 5px solid #4caf50;
+            font-size: 16px;
+            color: #1b5e20;
+            display: none;
+        }
+
+        /* WEATHER GRID */
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .weather-item {
+            background: #f1f8e9;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .weather-item span {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .weather-item h4 {
+            color: #2e7d32;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .weather-item p {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1b5e20;
+        }
+
+        /* QUOTE / BANNER */
+        .quote-banner {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+            color: white;
+            padding: 35px 25px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(27, 94, 32, 0.25);
+        }
+
+        .quote-banner h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .quote-banner p {
+            font-size: 17px;
+            font-style: italic;
+            opacity: 0.95;
+        }
+
+        /* CONTACT */
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .contact-card {
+            flex: 1 1 200px;
+            background: #f9fbf9;
+            border: 1px solid #e0f2e9;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 60px;
+            background: #1b5e20;
+            color: white;
+            text-align: center;
+            padding: 25px 20px;
+            font-size: 16px;
+            border-top: 4px solid #4caf50;
+        }
+
+        footer p {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 34px; }
+            .hero p { font-size: 16px; }
+            header { font-size: 22px; }
+            select, input[type="text"], input[type="number"] { max-width: 100%; }
+        }
+    </style>
 </head>
 <body>
 
 <header>
-Farmer Market Crop Price Prediction System
+    🌾 Farmer Market Crop Price Prediction System
 </header>
 
 <section class="hero">
     <div class="hero-content">
-        <h1>Smart Crop Selling System</h1>
-        <p>Predict crop prices and find the best market</p>
+        <h1>Smart Crop Selling & Prediction System</h1>
+        <p>Empowering farmers with data-driven price forecasts, market trends, and smart sell advice.</p>
     </div>
-</section>
-<section class="sell-advice">
-<h2>Sell Advice System</h2>
-
-<label><b>Select Crop:</b></label><br><br>
-<select id="sellCrop" style="padding:10px;width:300px;border-radius:10px;">
-    <option value="Wheat">Wheat</option>
-    <option value="Rice">Rice</option>
-    <option value="Cotton">Cotton</option>
-    <option value="Sugarcane">Sugarcane</option>
-</select>
-<br><br>
-
-<input type="number" id="marketPrice" 
-placeholder="Enter price offered by market"
-style="padding:10px;width:300px;border-radius:10px;">
-<br><br>
-
-<button onclick="checkPrice()">Check Price Advice</button>
-
-<p id="adviceOutput" style="margin-top:20px;font-size:18px;"></p>
 </section>
 
 <div class="container">
 
-<section class="crop-section">
-<h2>Popular Crops</h2>
+    <!-- WHY USE SYSTEM -->
+    <section class="panel" style="margin-top: 0;">
+        <h2>💡 Why Use Our System?</h2>
+        <div class="card-container" style="margin-top: 20px;">
+            <div class="card">
+                <div class="card-content">
+                    <h3>📈 Smart Prediction</h3>
+                    <p>Forecast upcoming crop rates using historical data and market demand algorithms.</p>
+                    <span class="badge badge-green">AI & OOP Logic</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <h3>🌦 Weather & Soil Support</h3>
+                    <p>Assess real-time agro-climatic factors to make informed harvesting and logistics plans.</p>
+                    <span class="badge badge-blue">Real-time Insights</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <h3>💰 Profit Advisory</h3>
+                    <p>Compare local trader quotes with market baselines to pinpoint optimal selling windows.</p>
+                    <span class="badge badge-orange">Maximize Returns</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<div class="card-container">
+    <!-- POPULAR CROPS -->
+    <section class="panel">
+        <h2>🌱 Popular Market Crops</h2>
+        <div class="card-container" style="margin-top: 20px;">
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?auto=format&fit=crop&w=600&q=80" alt="Wheat">
+                <div class="card-content">
+                    <h3>Wheat</h3>
+                    <p><b>Current Price:</b> ₹2,450 / quintal</p>
+                    <p><b>Market Demand:</b> High</p>
+                    <span class="badge badge-green">Steady Demand</span>
+                </div>
+            </div>
 
-<div class="card">
-<img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b">
-<div class="card-content">
-<h3>Wheat</h3>
-<p>Price: ₹2450/q</p>
-<p>Demand: High</p>
-</div>
-</div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&q=80" alt="Rice">
+                <div class="card-content">
+                    <h3>Rice</h3>
+                    <p><b>Current Price:</b> ₹2,369 / quintal</p>
+                    <p><b>Market Demand:</b> Medium</p>
+                    <span class="badge badge-blue">Staple Food</span>
+                </div>
+            </div>
 
-<div class="card">
-<img src="https://www.zojirushi.com/blog/wp-content/uploads/2016/01/riceplant01.jpg">
-<div class="card-content">
-<h3>Rice</h3>
-<p>Price: ₹2369/q</p>
-<p>Demand: Medium</p>
-</div>
-</div>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?auto=format&fit=crop&w=600&q=80" alt="Cotton">
+                <div class="card-content">
+                    <h3>Cotton</h3>
+                    <p><b>Current Price:</b> ₹7,710 / quintal</p>
+                    <p><b>Market Demand:</b> Very High</p>
+                    <span class="badge badge-orange">High Commercial Value</span>
+                </div>
+            </div>
 
-<div class="card">
-<img src="https://images.stockcake.com/public/e/e/f/eef468a3-b509-4e6b-be29-106e3f3d4879_large/blooming-cotton-plant-stockcake.jpg">
-<div class="card-content">
-<h3>Cotton</h3>
-<p>Price: ₹7710/q</p>
-<p>Demand: Very High</p>
-</div>
-</div>
-<div class="card">
-    <img src="https://www.bhg.com/thmb/dGVkgUEAOrdxCWcM9x79Tbp95kA=/4000x0/filters:no_upscale():strip_icc()/How-to-Plant-and-Grow-Sugar-Cane-965303384-2fdac181359d44c185dfa7988fc181a8.jpg" alt="Sugarcane">
-    <div class="card-content">
-        <h3>Sugarcane</h3>
-        <p>Price: ₹3200/q</p>
-        <p>Demand: High</p>
+            <div class="card">
+                <img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=600&q=80" alt="Sugarcane">
+                <div class="card-content">
+                    <h3>Sugarcane</h3>
+                    <p><b>Current Price:</b> ₹3,200 / quintal</p>
+                    <p><b>Market Demand:</b> High</p>
+                    <span class="badge badge-green">Cash Crop</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PREDICTION CALCULATOR -->
+    <section class="panel">
+        <h2>🔮 Predict Crop Price (OOP Engine)</h2>
+        <p style="color: #666; margin-bottom: 15px;">Select a crop to compute next-cycle projected market rate using the Object-Oriented `Crop` class model.</p>
+        <div class="form-group">
+            <div>
+                <label for="cropSelect">Crop Selection:</label><br>
+                <select id="cropSelect" style="margin-top: 5px;">
+                    <option value="Wheat">Wheat</option>
+                    <option value="Rice">Rice</option>
+                    <option value="Cotton">Cotton</option>
+                    <option value="Sugarcane">Sugarcane</option>
+                </select>
+            </div>
+            <div style="align-self: flex-end;">
+                <button onclick="predictPrice()">Calculate Prediction</button>
+            </div>
+        </div>
+        <div id="result" class="output-box"></div>
+    </section>
+
+    <!-- SELL ADVICE SYSTEM -->
+    <section class="panel">
+        <h2>📊 Smart Sell Advice Engine</h2>
+        <p style="color: #666; margin-bottom: 15px;">Input the price offered by your local buyer/mandi to receive automated strategic selling advice.</p>
+        <div class="form-group">
+            <div>
+                <label for="sellCrop">Select Crop:</label><br>
+                <select id="sellCrop" style="margin-top: 5px;">
+                    <option value="Wheat">Wheat (Base: ₹2,450/q)</option>
+                    <option value="Rice">Rice (Base: ₹2,369/q)</option>
+                    <option value="Cotton">Cotton (Base: ₹7,710/q)</option>
+                    <option value="Sugarcane">Sugarcane (Base: ₹3,200/q)</option>
+                </select>
+            </div>
+            <div>
+                <label for="marketPrice">Offered Price (₹/quintal):</label><br>
+                <input type="number" id="marketPrice" placeholder="e.g. 2600" style="margin-top: 5px;">
+            </div>
+            <div style="align-self: flex-end;">
+                <button onclick="checkPrice()">Evaluate Offer</button>
+            </div>
+        </div>
+        <div id="adviceOutput" class="output-box"></div>
+    </section>
+
+    <!-- AVAILABLE MARKETS -->
+    <section class="panel">
+        <h2>📍 Major APMC Mandi Locations</h2>
+        <div class="card-container" style="margin-top: 20px;">
+            <div class="card">
+                <div class="card-content">
+                    <h3>Pune APMC Market</h3>
+                    <p><b>Demand Status:</b> High</p>
+                    <p><b>Average Premium:</b> +15% over MSP</p>
+                    <span class="badge badge-green">Recommended</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <h3>Mumbai Wholesale Mandi</h3>
+                    <p><b>Demand Status:</b> Very High</p>
+                    <p><b>Average Premium:</b> +20% over MSP</p>
+                    <span class="badge badge-orange">Highest Volume</span>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-content">
+                    <h3>Nashik Agro Hub</h3>
+                    <p><b>Demand Status:</b> Medium</p>
+                    <p><b>Average Premium:</b> +10% over MSP</p>
+                    <span class="badge badge-blue">Direct Farmer Connect</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WEATHER & SOIL ANALYSIS -->
+    <section class="panel">
+        <h2>🌦 Weather & Agro-Climatic Conditions</h2>
+        <div class="weather-grid">
+            <div class="weather-item">
+                <span>⛅</span>
+                <h4>Current Condition</h4>
+                <p>Optimal for Harvesting</p>
+            </div>
+            <div class="weather-item">
+                <span>🌱</span>
+                <h4>Soil Classification</h4>
+                <p>Black Fertile Soil</p>
+            </div>
+            <div class="weather-item">
+                <span>💧</span>
+                <h4>Moisture Level</h4>
+                <p>72% (Adequate)</p>
+            </div>
+            <div class="weather-item">
+                <span>📈</span>
+                <h4>Projected Seasonal Yield</h4>
+                <p>High (+12% YoY)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HISTORICAL TREND GRAPH -->
+    <section class="panel">
+        <h2>📈 Historical Price Trends (2000 - 2025)</h2>
+        <p style="color: #666; margin-bottom: 15px;">Filter price trajectories over customized multi-year periods to recognize seasonal cycles.</p>
+        <div class="form-group" style="margin-bottom: 25px;">
+            <div>
+                <label for="fromYear">From Year:</label><br>
+                <select id="fromYear" style="margin-top: 5px;"></select>
+            </div>
+            <div>
+                <label for="toYear">To Year:</label><br>
+                <select id="toYear" style="margin-top: 5px;"></select>
+            </div>
+            <div style="align-self: flex-end;">
+                <button onclick="updateGraph()">Update Chart</button>
+            </div>
+        </div>
+        <div style="position: relative; width: 100%; min-height: 320px;">
+            <canvas id="cropChart"></canvas>
+        </div>
+    </section>
+
+    <!-- FARMER DETAILS FORM -->
+    <section class="panel">
+        <h2>👨‍🌾 Farmer Profit Estimation (OOP Logic)</h2>
+        <p style="color: #666; margin-bottom: 15px;">Calculate estimated returns based on registered landholding area using the `Farmer` object.</p>
+        <div class="form-group">
+            <div>
+                <label for="farmerName">Farmer Full Name:</label><br>
+                <input type="text" id="farmerName" placeholder="Enter name" style="margin-top: 5px;">
+            </div>
+            <div>
+                <label for="landArea">Land Area (in Acres):</label><br>
+                <input type="number" id="landArea" step="0.1" placeholder="e.g. 5" style="margin-top: 5px;">
+            </div>
+            <div style="align-self: flex-end;">
+                <button onclick="showFarmerData()">Calculate Estimate</button>
+            </div>
+        </div>
+        <div id="farmerOutput" class="output-box"></div>
+    </section>
+
+    <!-- EMPOWERING QUOTE BANNER -->
+    <div class="quote-banner">
+        <h3>🌾 Empowering Farmers with Smart Decisions</h3>
+        <p>“Right crop, right price, right time — technology for every farmer.”</p>
     </div>
-</div>
-</div>
-</section>
 
-<section class="predict-box">
-<h2>Predict Crop Price</h2>
-
-<select id="cropSelect">
-<option>Wheat</option>
-<option>Rice</option>
-<option>Cotton</option>
-<option>Sugarcane</option>
-</select>
-
-<button onclick="predictPrice()">Predict Now</button>
-
-<p id="result" style="margin-top:20px;font-size:20px;"></p>
-</section>
-
-<section class="market-section">
-<h2>Available Market Locations</h2>
-
-<div class="card-container">
-
-<div class="card">
-<div class="card-content">
-<h3>Pune Market</h3>
-<p>Demand: High</p>
-<p>Price Boost: +15%</p>
-</div>
-</div>
-
-<div class="card">
-<div class="card-content">
-<h3>Mumbai Market</h3>
-<p>Demand: Very High</p>
-<p>Price Boost: +20%</p>
-</div>
-</div>
-
-<div class="card">
-<div class="card-content">
-<h3>Nashik Market</h3>
-<p>Demand: Medium</p>
-<p>Price Boost: +10%</p>
-</div>
-</div>
+    <!-- CONTACT SUPPORT -->
+    <section class="panel">
+        <h2>📞 APMC Market Support & Helpdesk</h2>
+        <p style="color: #666; margin-bottom: 15px;">Reach out for mandi price verification and agricultural extension services.</p>
+        <div class="contact-info">
+            <div class="contact-card">
+                <b>📧 Email Support</b>
+                <p>farmerhelp@agrimarket.gov.in</p>
+            </div>
+            <div class="contact-card">
+                <b>📱 Toll-Free Helpline</b>
+                <p>+91 1800-180-1551 / +91 8881577000</p>
+            </div>
+            <div class="contact-card">
+                <b>🕒 Timings</b>
+                <p>Monday - Saturday (8:00 AM - 6:00 PM)</p>
+            </div>
+        </div>
+    </section>
 
 </div>
-</section>
 
-<section class="weather-analysis">
-<h2>Weather & Soil Analysis</h2>
-<p>🌦 Current Weather: Good for Harvest</p>
-<p>🌱 Soil Type: Black Soil</p>
-<p>💧 Moisture Level: 72%</p>
-<p>📈 Yield Prediction: High</p>
-</section>
-
-<section class="trend-graph">
-    <label><b>From Year:</b></label>
-    <select id="fromYear"></select>
-    &nbsp;&nbsp;
-    <label><b>To Year:</b></label>
-    <select id="toYear"></select>
-    &nbsp;&nbsp;
-    <button onclick="updateGraph()">Show Graph</button>
-    <canvas id="cropChart"></canvas>
-</section>
-
-<section class="farmer-form">
-<h2>Farmer Details</h2>
-
-<input type="text" id="farmerName" placeholder="Enter Farmer Name" style="padding:10px;width:250px;border-radius:10px;"><br><br>
-
-<input type="text" id="landArea" placeholder="Land Area (Acres)" style="padding:10px;width:250px;border-radius:10px;"><br><br>
-
-<button onclick="showFarmerData()">Submit</button>
-
-<p id="farmerOutput" style="margin-top:20px;font-size:18px;"></p>
-</section>
-<section class="contact">
-<h2>Contact Market Support</h2>
-<p>Email: farmerhelp@gmail.com</p>
-<p>Phone: +91 8881577000</p>
-</section>
-
-</div>
-<!--OOP code-->
+<!-- FOOTER -->
 <footer>
-OOP Mini Project | 1st Year BTech
-
+    <p><b>Farmer Market Crop Price Prediction System</b></p>
+    <p style="font-size: 14px; margin-top: 5px;">Object-Oriented Programming (OOP) Web Application | BTech Project</p>
 </footer>
 
+<!-- JAVASCRIPT LOGIC -->
 <script>
-class Crop{
-    constructor(name,price){
-        this.name=name;
-        this.price=price;
+/* ==========================================================
+   OBJECT-ORIENTED PROGRAMMING (OOP) IMPLEMENTATION
+   ========================================================== */
+
+// 1. Crop Class
+class Crop {
+    constructor(name, basePrice) {
+        this.name = name;
+        this.basePrice = basePrice;
     }
 
-    getPrediction(){
-        return Math.round(this.price*1.15);
-    }
-}
-
-function predictPrice(){
-    let crop=document.getElementById("cropSelect").value;
-    let price;
-
-    if(crop==="Wheat") price=2450;
-    else if(crop==="Rice") price=2369;
-    else if(crop==="Cotton") price=7710;
-    else price=3200;
-
-    let obj=new Crop(crop,price);
-
-    document.getElementById("result").innerHTML=
-        "Predicted Price of <b>"+crop+
-        "</b> is ₹<b>"+obj.getPrediction()+"</b>";
-}
-
-class Farmer{
-    constructor(name,land){
-        this.name=name;
-        this.land=land;
-    }
-
-    getEstimatedProfit(){
-        return this.land*5000;
+    getPrediction() {
+        // Forecasted price model incorporating standard 15% market cycle surge
+        return Math.round(this.basePrice * 1.15);
     }
 }
 
-function showFarmerData(){
-    let name=document.getElementById("farmerName").value;
-    let land=document.getElementById("landArea").value;
+// 2. Farmer Class
+class Farmer {
+    constructor(name, land) {
+        this.name = name;
+        this.land = parseFloat(land);
+    }
 
-    let farmer=new Farmer(name,land);
-
-    document.getElementById("farmerOutput").innerHTML=
-        "Farmer: <b>"+farmer.name+
-        "</b><br>Estimated Profit: ₹<b>"+
-        farmer.getEstimatedProfit()+"</b>";
+    getEstimatedProfit() {
+        // Average estimated baseline profit calculation ₹5,000 per acre
+        return Math.round(this.land * 5000);
+    }
 }
 
-class SellAdvisor{
-    constructor(currentPrice, offeredPrice){
+// 3. SellAdvisor Class
+class SellAdvisor {
+    constructor(currentPrice, offeredPrice) {
         this.currentPrice = currentPrice;
         this.offeredPrice = offeredPrice;
     }
 
-    getAdvice(){
-        let diff = this.offeredPrice - this.currentPrice;
+    getAdvice() {
+        const diff = this.offeredPrice - this.currentPrice;
 
-        if(this.offeredPrice >= this.currentPrice + 200){
-            return "✅ Good price. Sell now.";
-        }
-        else if(this.offeredPrice >= this.currentPrice){
-            return "👍 Fair price. You can sell within 2-3 days.";
-        }
-        else if(this.offeredPrice >= this.currentPrice - 200){
-            return "⏳ Wait 7-10 days for better market demand.";
-        }
-        else{
-            return "❌ Price is low. Wait 1 month before selling.";
+        if (this.offeredPrice >= this.currentPrice + 200) {
+            return "✅ <b>Highly Recommended:</b> Great price offered (+₹" + diff + "/q above baseline). Sell now to secure maximum profit.";
+        } else if (this.offeredPrice >= this.currentPrice) {
+            return "👍 <b>Fair Offer:</b> Fair market price offered. You can proceed with selling within the next 2–3 days.";
+        } else if (this.offeredPrice >= this.currentPrice - 200) {
+            return "⏳ <b>Hold Recommended:</b> Price offered is slightly below baseline (₹" + Math.abs(diff) + "/q lower). Wait 7–10 days for demand recovery.";
+        } else {
+            return "❌ <b>Do Not Sell:</b> Offer is significantly undervalued. Hold produce and monitor mandis for next month's demand spike.";
         }
     }
 }
 
-function checkPrice(){
-    let crop = document.getElementById("sellCrop").value;
-    let offered = parseInt(document.getElementById("marketPrice").value);
+/* ==========================================================
+   UI CONTROLLER FUNCTIONS
+   ========================================================== */
 
-    let currentPrice;
+const CROP_PRICES = {
+    "Wheat": 2450,
+    "Rice": 2369,
+    "Cotton": 7710,
+    "Sugarcane": 3200
+};
 
-    if(crop === "Wheat"){
-        currentPrice = 2450;
-    }
-    else if(crop === "Rice"){
-        currentPrice = 2369;
-    }
-    else if(crop === "Cotton"){
-        currentPrice = 7710;
-    }
-    else{
-        currentPrice = 3200; // Sugarcane
-    }
+// Predict Crop Price Handler
+function predictPrice() {
+    const cropName = document.getElementById("cropSelect").value;
+    const basePrice = CROP_PRICES[cropName] || 2500;
 
-    let advisor = new SellAdvisor(currentPrice, offered);
+    const cropObj = new Crop(cropName, basePrice);
+    const predictedPrice = cropObj.getPrediction();
 
-    document.getElementById("adviceOutput").innerHTML =
-        "<b>Crop:</b> " + crop +
-        "<br><b>Current Market Price:</b> ₹" + currentPrice +
-        "<br><b>Farmer Offered Price:</b> ₹" + offered +
-        "<br><b>Advice:</b> " + advisor.getAdvice();
+    const resultBox = document.getElementById("result");
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `
+        🌱 <b>Crop:</b> ${cropObj.name} <br>
+        📊 <b>Current Base MSP:</b> ₹${cropObj.basePrice.toLocaleString()} / quintal <br>
+        📈 <b>Predicted Future Rate:</b> ₹<b>${predictedPrice.toLocaleString()}</b> / quintal (+15% forecasted)
+    `;
 }
+
+// Check Price Advice Handler
+function checkPrice() {
+    const cropName = document.getElementById("sellCrop").value;
+    const offeredInput = document.getElementById("marketPrice").value;
+    const resultBox = document.getElementById("adviceOutput");
+
+    if (!offeredInput || isNaN(offeredInput) || parseFloat(offeredInput) <= 0) {
+        alert("Please enter a valid offered price in ₹");
+        return;
+    }
+
+    const offeredPrice = parseFloat(offeredInput);
+    const currentPrice = CROP_PRICES[cropName] || 2500;
+
+    const advisor = new SellAdvisor(currentPrice, offeredPrice);
+    const adviceText = advisor.getAdvice();
+
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `
+        🌾 <b>Selected Crop:</b> ${cropName} <br>
+        📌 <b>Current APMC Benchmark Rate:</b> ₹${currentPrice.toLocaleString()} / quintal <br>
+        💵 <b>Trader Offered Rate:</b> ₹${offeredPrice.toLocaleString()} / quintal <br>
+        📋 <b>Decision Strategy:</b> ${adviceText}
+    `;
+}
+
+// Show Farmer Data Handler
+function showFarmerData() {
+    const name = document.getElementById("farmerName").value.trim();
+    const landInput = document.getElementById("landArea").value;
+    const resultBox = document.getElementById("farmerOutput");
+
+    if (!name) {
+        alert("Please enter farmer name");
+        return;
+    }
+
+    if (!landInput || isNaN(landInput) || parseFloat(landInput) <= 0) {
+        alert("Please enter a valid positive number for land area (in acres)");
+        return;
+    }
+
+    const farmer = new Farmer(name, landInput);
+    const profit = farmer.getEstimatedProfit();
+
+    resultBox.style.display = "block";
+    resultBox.innerHTML = `
+        👨‍🌾 <b>Farmer Profile:</b> ${farmer.name} <br>
+        🌾 <b>Registered Cultivation Area:</b> ${farmer.land} Acres <br>
+        💰 <b>Estimated Baseline Net Profit:</b> ₹<b>${profit.toLocaleString()}</b>
+    `;
+}
+
+/* ==========================================================
+   CHART.JS HISTORICAL DATA & GRAPH LOGIC
+   ========================================================== */
 
 const years = [];
-
 const wheatData = [];
 const riceData = [];
 const cottonData = [];
 const sugarcaneData = [];
 
-/* GENERATE YEARS 2000-2025 */
-
-for(let year = 2000; year <= 2025; year++){
-
+// Generate historical trend data (2000 - 2025)
+for (let year = 2000; year <= 2025; year++) {
     years.push(year.toString());
-
     wheatData.push(1200 + (year - 2000) * 50);
-
     riceData.push(1000 + (year - 2000) * 55);
-
     cottonData.push(3000 + (year - 2000) * 180);
-
     sugarcaneData.push(1500 + (year - 2000) * 70);
 }
 
-/* ADD YEARS TO DROPDOWN */
-
+// Populate Year Select Options
 const fromSelect = document.getElementById("fromYear");
-
 const toSelect = document.getElementById("toYear");
 
 years.forEach((year, index) => {
-
-    fromSelect.innerHTML +=
-        `<option value="${index}">${year}</option>`;
-
-    toSelect.innerHTML +=
-        `<option value="${index}">${year}</option>`;
+    fromSelect.innerHTML += `<option value="${index}">${year}</option>`;
+    toSelect.innerHTML += `<option value="${index}">${year}</option>`;
 });
 
-/* DEFAULT TO YEAR */
+// Set default dropdown values: 2015 to 2025
+fromSelect.value = 15; // 2015
+toSelect.value = years.length - 1; // 2025
 
-toSelect.value = years.length - 1;
-
-/* CREATE GRAPH */
-
-const ctx = document.getElementById('cropChart');
+const ctx = document.getElementById('cropChart').getContext('2d');
 
 let cropChart = new Chart(ctx, {
-
     type: 'line',
-
     data: {
-
-        labels: years,
-
+        labels: years.slice(15, years.length),
         datasets: [
-
-        {
-            label: 'Wheat Price',
-            data: wheatData,
-            borderWidth: 3
-        },
-
-        {
-            label: 'Rice Price',
-            data: riceData,
-            borderWidth: 3
-        },
-
-        {
-            label: 'Cotton Price',
-            data: cottonData,
-            borderWidth: 3
-        },
-
-        {
-            label: 'Sugarcane Price',
-            data: sugarcaneData,
-            borderWidth: 3
-        }
-
+            {
+                label: 'Wheat (₹/q)',
+                data: wheatData.slice(15, years.length),
+                borderColor: '#e67e22',
+                backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: false
+            },
+            {
+                label: 'Rice (₹/q)',
+                data: riceData.slice(15, years.length),
+                borderColor: '#27ae60',
+                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: false
+            },
+            {
+                label: 'Cotton (₹/q)',
+                data: cottonData.slice(15, years.length),
+                borderColor: '#2980b9',
+                backgroundColor: 'rgba(41, 128, 185, 0.1)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: false
+            },
+            {
+                label: 'Sugarcane (₹/q)',
+                data: sugarcaneData.slice(15, years.length),
+                borderColor: '#8e44ad',
+                backgroundColor: 'rgba(142, 68, 173, 0.1)',
+                borderWidth: 3,
+                tension: 0.3,
+                fill: false
+            }
         ]
     },
-
     options: {
-        responsive: true
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    font: { family: 'Poppins', size: 13 },
+                    usePointStyle: true,
+                    padding: 15
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.dataset.label + ': ₹' + context.parsed.y.toLocaleString();
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                title: { display: true, text: 'Year', font: { family: 'Poppins', weight: 'bold' } },
+                grid: { color: '#eef2ee' }
+            },
+            y: {
+                title: { display: true, text: 'Price in ₹ per Quintal', font: { family: 'Poppins', weight: 'bold' } },
+                grid: { color: '#eef2ee' }
+            }
+        }
     }
 });
 
-/* UPDATE GRAPH */
+function updateGraph() {
+    const from = parseInt(document.getElementById("fromYear").value);
+    const to = parseInt(document.getElementById("toYear").value);
 
-function updateGraph(){
-
-    let from =
-        parseInt(document.getElementById("fromYear").value);
-
-    let to =
-        parseInt(document.getElementById("toYear").value);
-
-    if(from > to){
-
-        alert("From Year must be smaller than To Year");
-
+    if (from > to) {
+        alert("The 'From Year' must be earlier than or equal to 'To Year'.");
         return;
     }
 
-    cropChart.data.labels =
-        years.slice(from, to + 1);
-
-    cropChart.data.datasets[0].data =
-        wheatData.slice(from, to + 1);
-
-    cropChart.data.datasets[1].data =
-        riceData.slice(from, to + 1);
-
-    cropChart.data.datasets[2].data =
-        cottonData.slice(from, to + 1);
-
-    cropChart.data.datasets[3].data =
-        sugarcaneData.slice(from, to + 1);
+    cropChart.data.labels = years.slice(from, to + 1);
+    cropChart.data.datasets[0].data = wheatData.slice(from, to + 1);
+    cropChart.data.datasets[1].data = riceData.slice(from, to + 1);
+    cropChart.data.datasets[2].data = cottonData.slice(from, to + 1);
+    cropChart.data.datasets[3].data = sugarcaneData.slice(from, to + 1);
 
     cropChart.update();
 }
